@@ -12,6 +12,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Open file under cursor
 - Block un/indent by a space
 - Block un/comment
+- Arbitrary indent
 
 Dependency:
 

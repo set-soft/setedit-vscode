@@ -582,6 +582,64 @@ function activate(context) {
     if (selEqual) ed.selection = new vscode.Selection(doc.positionAt(b2), doc.positionAt(e2));
   }
 
+  // Anteponer un texto arbitrario al comienzo de cada línea del bloque
+  // persistente. A diferencia de shiftLines(), este comando requiere
+  // explícitamente un bloque persistente y no usa la selección actual
+  // como fallback.
+  async function prefixBlockLines(ed) {
+    const doc = ed.document;
+    const m = validBlock(doc);
+    let b, e;
+    if (m) { b = m.b; e = m.e; }
+    else if (!ed.selection.isEmpty) { b = doc.offsetAt(ed.selection.start); e = doc.offsetAt(ed.selection.end); }
+    else { b = e = off(ed); }
+
+    const prefix = await vscode.window.showInputBox({
+      prompt: 'Texto a anteponer al comienzo de cada línea del bloque',
+      placeHolder: 'Por ejemplo: "    ", "> ", "// "'
+    });
+
+    // Escape cancela la operación.
+    if (prefix === undefined) return;
+
+    // No tiene sentido modificar el bloque si no se agregó nada.
+    if (prefix.length === 0) return;
+
+    const sp = doc.positionAt(b);
+    const ep = doc.positionAt(e);
+    const first = sp.line;
+    let last = ep.line;
+
+    // Un bloque que termina exactamente en columna 0 no incluye esa línea.
+    if (e > b && ep.character === 0 && last > first) last--;
+
+    const starts = [];
+    for (let line = first; line <= last; line++) {
+      starts.push(doc.lineAt(line));
+    }
+    if (!starts.length) return;
+
+    const firstLineStart = doc.offsetAt(starts[0].range.start);
+
+    // Si el comienzo del bloque está dentro de la primera línea,
+    // el prefijo insertado delante de la línea también queda dentro
+    // del bloque y por lo tanto desplaza m.b.
+    const b2 = b + (b > firstLineStart ? prefix.length : 0);
+
+    // Cada inserción está antes de m.e en el documento original.
+    const e2 = e + prefix.length * starts.length;
+
+    await blockOp(
+      ed,
+      (eb) => {
+        for (const line of starts) {
+          eb.insert(line.range.start, prefix);
+        }
+      },
+      () => ({ b: b2, e: e2 })
+    );
+  }
+
   // Como blockOp, pero para operaciones que se ejecutan con un comando
   // (no con ed.edit): conserva deshacer/rehacer de las marcas del bloque.
   async function blockOpRun(ed, run, afterFn) {
@@ -696,6 +754,8 @@ function activate(context) {
     // bloque (o de la selección, o la línea actual si no hay ninguno).
     blockIndent: (ed) => shiftLines(ed, +1),
     blockOutdent: (ed) => shiftLines(ed, -1),
+    // Anteponer texto arbitrario al comienzo de cada línea del bloque.
+    blockPrefix: (ed) => prefixBlockLines(ed),
     // Comentar / descomentar las líneas del bloque (usa los comandos nativos
     // para respetar el estilo de comentario de cada lenguaje).
     blockComment: (ed) => commentLines(ed, true),

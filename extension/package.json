@@ -183,6 +183,11 @@
         "command": "borlandKit.blockUncomment",
         "title": "Descomentar bloque",
         "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockPrefix",
+        "title": "Anteponer texto a cada línea del bloque",
+        "category": "Borland Kit"
       }
     ],
     "keybindings": [
@@ -311,6 +316,11 @@
         "key": "ctrl+k u",
         "command": "borlandKit.blockOutdent",
         "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k p",
+        "command": "borlandKit.blockPrefix",
+        "when": "editorTextFocus && borlandKit.hasBlock"
       }
     ],
     "configurationDefaults": {
@@ -356,6 +366,10 @@
         {
           "command": "borlandKit.blockOutdent",
           "group": "1@2"
+        },
+        {
+          "command": "borlandKit.blockPrefix",
+          "group": "1@3"
         }
       ],
       "borlandKit.commentMenu": [
