@@ -9,6 +9,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Look for symbol in file and workspace
 - Jump to line
 - Replace block
+- Open file under cursor
 
 Wrapping:
 

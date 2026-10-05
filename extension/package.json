@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"
@@ -45,6 +45,11 @@
             "Última carpeta usada en estos diálogos"
           ],
           "description": "Carpeta inicial de los diálogos de Ctrl+W / Ctrl+R (escribir/leer bloque). Si la carpeta elegida no sirve (no existe o es la de configuración del editor), se prueba con las otras."
+        },
+        "borlandKit.browserCommand": {
+          "type": "string",
+          "default": "",
+          "description": "Comando para abrir URLs y archivos img:/pdf: (ej: \"firefox\" o \"firefox --new-tab\"). Vacío = navegador/visor por defecto del sistema."
         }
       }
     },
@@ -132,6 +137,10 @@
       {
         "command": "borlandKit.blockReplacePaste",
         "title": "Borland Kit: Reemplazar bloque por el portapapeles"
+      },
+      {
+        "command": "borlandKit.openFileUnderCursor",
+        "title": "Borland Kit: Abrir archivo o URL bajo el cursor"
       }
     ],
     "keybindings": [
@@ -203,8 +212,13 @@
         "when": "editorTextFocus"
       },
       {
-        "key": "ctrl+insert",
+        "key": "ctrl+delete",
         "command": "borlandKit.blockDelete",
+        "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "ctrl+insert",
+        "command": "borlandKit.blockClipCopy",
         "when": "editorTextFocus && borlandKit.hasBlock"
       },
       {
@@ -240,6 +254,11 @@
         "key": "ctrl+shift+insert",
         "command": "borlandKit.blockReplacePaste",
         "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "ctrl+enter",
+        "command": "borlandKit.openFileUnderCursor",
+        "when": "editorTextFocus && !suggestWidgetVisible"
       }
     ],
     "configurationDefaults": {

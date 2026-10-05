@@ -4,6 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
+const cp = require('child_process');
 
 // ------------------------------------------------------------ utilidades JSONC
 // kinds: 0 = código, 1 = string, 2 = comentario
@@ -401,6 +402,150 @@ function activate(context) {
     context.globalState.update('borlandKit.lastDir2', lastDir);
   };
 
+  // ========================================= ABRIR ARCHIVO BAJO EL CURSOR
+  const URL_RE = /^[a-z][a-z0-9+.-]*:\/\//i;
+  const EXCLUDE_GLOB = '**/{node_modules,.git,.hg,.svn,__pycache__,.venv,venv,.mypy_cache,.pytest_cache}/**';
+  const SKIP_DIRS = new Set(['node_modules', '.git', '.hg', '.svn', '__pycache__', '.venv', 'venv', '.mypy_cache', '.pytest_cache']);
+
+  // Aísla el nombre: si el cursor está entre comillas (' " `) el contenido es
+  // el nombre; si no, es la palabra delimitada por espacios/paréntesis/etc.
+  function extractTarget(ed) {
+    const doc = ed.document;
+    const line = doc.lineAt(ed.selection.active.line).text;
+    if (!ed.selection.isEmpty && ed.selection.isSingleLine) {
+      const raw = doc.getText(ed.selection).trim().replace(/^['"`]+|['"`]+$/g, '');
+      return { name: raw, rest: line.slice(ed.selection.end.character), quoted: true };
+    }
+    let col = ed.selection.active.character;
+    for (let i = 0; i < line.length; i++) {
+      const q = line[i];
+      if (q !== '"' && q !== "'" && q !== '`') continue;
+      const j = line.indexOf(q, i + 1);
+      if (j < 0) continue;
+      if (col > i && col <= j) return { name: line.slice(i + 1, j).trim(), rest: line.slice(j + 1), quoted: true };
+      i = j;
+    }
+    const DELIM = /[\s'"`()\[\]{}<>|]/;
+    const isD = (c) => c === undefined || DELIM.test(c);
+    if (isD(line[col]) && col > 0 && !isD(line[col - 1])) col--;
+    if (isD(line[col])) return null;
+    let s0 = col, e0 = col;
+    while (s0 > 0 && !isD(line[s0 - 1])) s0--;
+    while (e0 < line.length && !isD(line[e0])) e0++;
+    return { name: line.slice(s0, e0), rest: line.slice(e0), quoted: false };
+  }
+
+  function parseTarget(raw) {
+    let name = raw.name;
+    let mode = 'editor';
+    let line = null, col = null;
+    const pm = /^(img|pdf):\s*/i.exec(name);
+    if (pm) { mode = 'browser'; name = name.slice(pm[0].length); }
+    if (!raw.quoted) name = name.replace(/[.,;!?:]+$/, '');
+    let url = null;
+    if (URL_RE.test(name)) url = name;
+    else if (/^www\./i.test(name)) url = 'https://' + name;
+    if (url) {
+      if (/^file:\/\//i.test(url)) { name = vscode.Uri.parse(url).fsPath; url = null; }
+      else return { url, mode: 'browser' };
+    }
+    if (!raw.quoted && name.includes('=')) name = name.slice(name.indexOf('=') + 1);
+    const m = /:(\d+)(?::(\d+))?$/.exec(name);
+    if (m) { line = parseInt(m[1], 10); col = m[2] ? parseInt(m[2], 10) : null; name = name.slice(0, m.index); }
+    else {
+      const lm = /^\s*,\s*line\s+(\d+)/i.exec(raw.rest || '');
+      if (lm) line = parseInt(lm[1], 10);   // File "x.py", line 12
+    }
+    if (name.startsWith('~')) name = path.join(os.homedir(), name.slice(1));
+    return { name, line, col, mode };
+  }
+
+  const escapeGlob = (t) => t.replace(/[*?\[\]{}]/g, (c) => `[${c}]`);
+  const statOf = (p) => { try { const st = fs.statSync(p); return { p, dir: st.isDirectory() }; } catch (e) { return null; } };
+
+  function walkFind(root, clean) {
+    const out = [];
+    let count = 0;
+    const rec = (dir, depth) => {
+      if (depth > 8 || count > 20000 || out.length >= 50) return;
+      let ents;
+      try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch (e) { return; }
+      for (const en of ents) {
+        count++;
+        const full = path.join(dir, en.name);
+        if (en.isDirectory()) { if (!SKIP_DIRS.has(en.name)) rec(full, depth + 1); }
+        else if (full.split(path.sep).join('/').endsWith('/' + clean)) out.push(full);
+      }
+    };
+    rec(root, 0);
+    return out;
+  }
+
+  async function resolveFile(name, doc) {
+    if (path.isAbsolute(name)) { const r = statOf(name); return r ? [r] : []; }
+    const docDir = doc.uri.scheme === 'file' && !doc.isUntitled ? path.dirname(doc.fileName) : null;
+    if (docDir) { const r = statOf(path.resolve(docDir, name)); if (r) return [r]; }
+    const clean = name.replace(/\\/g, '/').replace(/^(\.\.?\/)+/, '').replace(/^\/+/, '');
+    if (!clean) return [];
+    let found = [];
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length) {
+      const uris = await vscode.workspace.findFiles('**/' + escapeGlob(clean), EXCLUDE_GLOB, 50);
+      found = uris.map((u) => u.fsPath);
+    } else if (docDir) {
+      found = walkFind(docDir, clean);
+    }
+    if (docDir) {
+      const common = (p) => { let n = 0; while (n < p.length && n < docDir.length && p[n] === docDir[n]) n++; return n; };
+      found.sort((a, b) => common(b) - common(a) || a.length - b.length);
+    }
+    return found.map((p) => ({ p, dir: false }));
+  }
+
+  function openInBrowser(target) {
+    const isUrl = URL_RE.test(target);
+    const cmd = vscode.workspace.getConfiguration('borlandKit').get('browserCommand', '').trim();
+    const arg = isUrl ? target : vscode.Uri.file(target).toString();
+    if (cmd) {
+      const [bin, ...pre] = cmd.split(/\s+/);
+      try {
+        const child = cp.spawn(bin, [...pre, arg], { detached: true, stdio: 'ignore' });
+        child.on('error', (e) => vscode.window.showErrorMessage(`No se pudo ejecutar "${bin}": ${e.message}`));
+        child.unref();
+      } catch (e) {
+        vscode.window.showErrorMessage(`No se pudo ejecutar "${bin}": ${e.message}`);
+      }
+    } else {
+      vscode.env.openExternal(isUrl ? vscode.Uri.parse(target) : vscode.Uri.file(target));
+    }
+  }
+
+  async function openFileUnderCursor(ed) {
+    const raw = extractTarget(ed);
+    if (!raw || !raw.name) { vscode.window.showInformationMessage('No hay nombre de archivo bajo el cursor.'); return; }
+    const t = parseTarget(raw);
+    if (t.url) { openInBrowser(t.url); return; }
+    if (!t.name) { vscode.window.showInformationMessage('No hay nombre de archivo bajo el cursor.'); return; }
+    const found = await resolveFile(t.name, ed.document);
+    if (!found.length) { vscode.window.showWarningMessage(`No se encontró "${t.name}".`); return; }
+    let pick = found[0];
+    if (found.length > 1) {
+      const chosen = await vscode.window.showQuickPick(
+        found.map((f) => ({ label: vscode.workspace.asRelativePath(f.p), f })),
+        { placeHolder: `Hay ${found.length} coincidencias para "${t.name}"` });
+      if (!chosen) return;
+      pick = chosen.f;
+    }
+    if (t.mode === 'browser') { openInBrowser(pick.p); return; }
+    const uri = vscode.Uri.file(pick.p);
+    if (pick.dir) { await vscode.commands.executeCommand('revealInExplorer', uri); return; }
+    if (t.line != null) {
+      const pos = new vscode.Position(Math.max(0, t.line - 1), Math.max(0, (t.col || 1) - 1));
+      await vscode.commands.executeCommand('vscode.open', uri, { selection: new vscode.Range(pos, pos) });
+    } else {
+      await vscode.commands.executeCommand('vscode.open', uri);
+    }
+  }
+
   function wordAtCursor(ed) {
     const doc = ed.document;
     if (!ed.selection.isEmpty && ed.selection.isSingleLine) return doc.getText(ed.selection);
@@ -453,6 +598,7 @@ function activate(context) {
     // filtrada con la palabra bajo el cursor (o la selección).
     symbolsInFile: (ed) => quickOpenWithWord(ed, '@'),
     symbolsInWorkspace: (ed) => quickOpenWithWord(ed, '#'),
+    openFileUnderCursor: (ed) => openFileUnderCursor(ed),
     blockBegin: (ed) => {
       const m = getMarks(ed.document);
       m.b = off(ed);
