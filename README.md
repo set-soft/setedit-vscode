@@ -8,6 +8,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Repeatable search and replace
 - Look for symbol in file and workspace
 - Jump to line
+- Replace block
 
 Wrapping:
 

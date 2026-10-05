@@ -481,6 +481,19 @@ function activate(context) {
       await vscode.env.clipboard.writeText(doc.getText(r));
       await blockOp(ed, (eb) => eb.delete(r), () => ({ b: null, e: null }));
     },
+    // Ctrl+Shift+Insert: reemplaza el bloque por el contenido del portapapeles
+    // (borrar bloque + pegar, en una sola operación deshacible).
+    blockReplacePaste: async (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      const doc = ed.document;
+      const text = await vscode.env.clipboard.readText();
+      if (!text) { vscode.window.showWarningMessage('El portapapeles está vacío.'); return; }
+      const b = m.b, e = m.e;
+      const len = lenInDoc(doc, text);
+      await blockOp(ed, (eb) => eb.replace(rng(doc, b, e), text), () => ({ b, e: b + len }));
+      const pos = doc.positionAt(b + len);
+      ed.selection = new vscode.Selection(pos, pos);
+    },
     blockCopy: async (ed) => {
       const m = needBlock(ed); if (!m) return;
       const doc = ed.document;
