@@ -11,3 +11,10 @@ Wrapping:
 
 - `borlandKit.excludeFromWrapping` commands excluded from wrapping
 - Added with: `Ctrl+Shift+P` then `Borland Kit: Instalar atajos grabables`
+
+Block Read/Write Dialog:
+
+- `borlandKit.dialogDirectory`:
+  - `document`: directory for the file under edition
+  - `workspace`: project root
+  - `last`: last one used in the dialog

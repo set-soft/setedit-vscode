@@ -250,7 +250,7 @@ function activate(context) {
     overviewRulerColor: new vscode.ThemeColor('editor.selectionBackground'),
     overviewRulerLane: vscode.OverviewRulerLane.Center,
   });
-  let lastDir = context.globalState.get('borlandKit.lastDir', '');
+  let lastDir = context.globalState.get('borlandKit.lastDir2', '');
 
   const key = (doc) => doc.uri.toString();
   const getMarks = (doc) => {
@@ -376,10 +376,29 @@ function activate(context) {
     m.b = b; m.e = e;
     refreshAll();
   }
-  const dialogDir = (doc) => lastDir || (!doc.isUntitled ? path.dirname(doc.fileName) : os.homedir());
+  // Carpeta inicial de los diálogos de leer/escribir bloque.
+  // Nunca se usa la carpeta de configuración del propio editor (ahí vive
+  // keybindings.json) ni una carpeta que ya no existe.
+  function dialogDir(doc) {
+    const mode = vscode.workspace.getConfiguration('borlandKit').get('dialogDirectory', 'document');
+    const userDir = path.resolve(context.globalStorageUri.fsPath, '..', '..');
+    const inside = (d, root) => {
+      const r = path.relative(root, d);
+      return r === '' || (!r.startsWith('..') && !path.isAbsolute(r));
+    };
+    const docDir = doc.uri.scheme === 'file' && !doc.isUntitled ? path.dirname(doc.fileName) : null;
+    const folder = vscode.workspace.getWorkspaceFolder(doc.uri) || (vscode.workspace.workspaceFolders || [])[0];
+    const wsDir = folder ? folder.uri.fsPath : null;
+    const usable = (d) => d && fs.existsSync(d) && !inside(d, userDir);
+    const order = mode === 'last' ? [lastDir, docDir, wsDir]
+      : mode === 'workspace' ? [wsDir, docDir, lastDir]
+      : [docDir, wsDir, lastDir];
+    for (const d of order) if (usable(d)) return d;
+    return os.homedir();
+  }
   const rememberDir = (fsPath) => {
     lastDir = path.dirname(fsPath);
-    context.globalState.update('borlandKit.lastDir', lastDir);
+    context.globalState.update('borlandKit.lastDir2', lastDir);
   };
 
   const edCmds = {
@@ -502,7 +521,7 @@ function activate(context) {
         openLabel: 'Leer',
         canSelectMany: false,
         canSelectFolders: false,
-        defaultUri: vscode.Uri.file(dialogDir(doc) + path.sep),
+        defaultUri: vscode.Uri.file(dialogDir(doc)),
       });
       if (!uris || !uris.length) return;
       let text;
