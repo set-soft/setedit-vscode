@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"
@@ -56,99 +56,133 @@
     "commands": [
       {
         "command": "borlandKit.installKeybindings",
-        "title": "Borland Kit: Instalar atajos grabables"
+        "title": "Instalar atajos grabables",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.macroStart",
-        "title": "Borland Kit: Grabar macro"
+        "title": "Grabar macro",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.macroStop",
-        "title": "Borland Kit: Detener grabación"
+        "title": "Detener grabación",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.macroPlay",
-        "title": "Borland Kit: Reproducir macro"
+        "title": "Reproducir macro",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.macroPlayN",
-        "title": "Borland Kit: Reproducir macro N veces"
+        "title": "Reproducir macro N veces",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.exec",
-        "title": "Borland Kit: Ejecutar comando (grabable)"
+        "title": "Ejecutar comando (grabable)",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.replaceNext",
-        "title": "Borland Kit: Reemplazar siguiente"
+        "title": "Reemplazar siguiente",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockBegin",
-        "title": "Borland Kit: Inicio de bloque"
+        "title": "Inicio de bloque",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockEnd",
-        "title": "Borland Kit: Fin de bloque"
+        "title": "Fin de bloque",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockHide",
-        "title": "Borland Kit: Ocultar bloque"
+        "title": "Ocultar bloque",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockSelect",
-        "title": "Borland Kit: Convertir bloque en selección"
+        "title": "Convertir bloque en selección",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockCopy",
-        "title": "Borland Kit: Copiar bloque al cursor"
+        "title": "Copiar bloque al cursor",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockMove",
-        "title": "Borland Kit: Mover bloque al cursor"
+        "title": "Mover bloque al cursor",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockDelete",
-        "title": "Borland Kit: Borrar bloque"
+        "title": "Borrar bloque",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockWrite",
-        "title": "Borland Kit: Escribir bloque a archivo"
+        "title": "Escribir bloque a archivo",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockRead",
-        "title": "Borland Kit: Leer archivo en el cursor"
+        "title": "Leer archivo en el cursor",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockClipCopy",
-        "title": "Borland Kit: Copiar bloque al portapapeles"
+        "title": "Copiar bloque al portapapeles",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockClipCut",
-        "title": "Borland Kit: Cortar bloque al portapapeles"
+        "title": "Cortar bloque al portapapeles",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.symbolsInFile",
-        "title": "Borland Kit: Símbolos del archivo (palabra bajo el cursor)"
+        "title": "Símbolos del archivo (palabra bajo el cursor)",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.symbolsInWorkspace",
-        "title": "Borland Kit: Símbolos del proyecto (palabra bajo el cursor)"
+        "title": "Símbolos del proyecto (palabra bajo el cursor)",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockReplacePaste",
-        "title": "Borland Kit: Reemplazar bloque por el portapapeles"
+        "title": "Reemplazar bloque por el portapapeles",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.openFileUnderCursor",
-        "title": "Borland Kit: Abrir archivo o URL bajo el cursor"
+        "title": "Abrir archivo o URL bajo el cursor",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockIndent",
-        "title": "Borland Kit: Indentar bloque un espacio"
+        "title": "Indentar bloque (un espacio)",
+        "category": "Borland Kit"
       },
       {
         "command": "borlandKit.blockOutdent",
-        "title": "Borland Kit: Desindentar bloque un espacio"
+        "title": "Desindentar bloque (un espacio)",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockComment",
+        "title": "Comentar bloque",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockUncomment",
+        "title": "Descomentar bloque",
+        "category": "Borland Kit"
       }
     ],
     "keybindings": [
@@ -281,6 +315,59 @@
     ],
     "configurationDefaults": {
       "editor.find.seedSearchStringFromSelection": "never"
+    },
+    "submenus": [
+      {
+        "id": "borlandKit.tools",
+        "label": "Herramientas"
+      },
+      {
+        "id": "borlandKit.indentMenu",
+        "label": "Des/indentar bloque"
+      },
+      {
+        "id": "borlandKit.commentMenu",
+        "label": "Des/comentar bloque"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "submenu": "borlandKit.tools",
+          "group": "9_borlandKit",
+          "when": "editorTextFocus"
+        }
+      ],
+      "borlandKit.tools": [
+        {
+          "submenu": "borlandKit.indentMenu",
+          "group": "1_block@1"
+        },
+        {
+          "submenu": "borlandKit.commentMenu",
+          "group": "1_block@2"
+        }
+      ],
+      "borlandKit.indentMenu": [
+        {
+          "command": "borlandKit.blockIndent",
+          "group": "1@1"
+        },
+        {
+          "command": "borlandKit.blockOutdent",
+          "group": "1@2"
+        }
+      ],
+      "borlandKit.commentMenu": [
+        {
+          "command": "borlandKit.blockComment",
+          "group": "1@1"
+        },
+        {
+          "command": "borlandKit.blockUncomment",
+          "group": "1@2"
+        }
+      ]
     }
   }
 }

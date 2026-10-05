@@ -309,6 +309,8 @@
     {"key":"ctrl+c","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCopy"},"when":"editorTextFocus && !editorHasSelection && borlandKit.hasBlock"},
     {"key":"ctrl+x","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCut"},"when":"editorTextFocus && !editorHasSelection && borlandKit.hasBlock"},
     {"key":"ctrl+shift+insert","command":"borlandKit.exec","args":{"command":"borlandKit.blockReplacePaste"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"ctrl+k i","command":"borlandKit.exec","args":{"command":"borlandKit.blockIndent"},"when":"editorTextFocus"},
+    {"key":"ctrl+k u","command":"borlandKit.exec","args":{"command":"borlandKit.blockOutdent"},"when":"editorTextFocus"},
     {"key":"f2","command":"borlandKit.exec","args":{"command":"workbench.action.files.save"}},
     {"key":"f3","command":"borlandKit.exec","args":{"command":"workbench.action.files.openFile"}},
     {"key":"alt+0","command":"borlandKit.exec","args":{"command":"workbench.action.quickOpen"}},

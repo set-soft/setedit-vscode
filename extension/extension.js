@@ -582,6 +582,63 @@ function activate(context) {
     if (selEqual) ed.selection = new vscode.Selection(doc.positionAt(b2), doc.positionAt(e2));
   }
 
+  // Como blockOp, pero para operaciones que se ejecutan con un comando
+  // (no con ed.edit): conserva deshacer/rehacer de las marcas del bloque.
+  async function blockOpRun(ed, run, afterFn) {
+    const doc = ed.document;
+    const o = opsOf(doc);
+    const before = snapMarks(doc);
+    const hBefore = hashDoc(doc);
+    await run();
+    const hAfter = hashDoc(doc);
+    if (hAfter === hBefore) return;
+    const after = afterFn();
+    setBlock(ed, after.b, after.e);
+    o.undo.push({ before, after, hBefore, hAfter });
+    if (o.undo.length > 100) o.undo.shift();
+    o.redo.length = 0;
+  }
+
+  async function commentLines(ed, add) {
+    const doc = ed.document;
+    const m = validBlock(doc);
+    let b, e;
+    if (m) { b = m.b; e = m.e; }
+    else if (!ed.selection.isEmpty) { b = doc.offsetAt(ed.selection.start); e = doc.offsetAt(ed.selection.end); }
+    else { b = e = off(ed); }
+    const sp = doc.positionAt(b), ep = doc.positionAt(e);
+    const first = sp.line;
+    let last = ep.line;
+    if (e > b && ep.character === 0 && last > first) last--;
+    const origSel = ed.selection;
+    const selEqual = !origSel.isEmpty
+      && doc.offsetAt(origSel.start) === b && doc.offsetAt(origSel.end) === e;
+    const cur = origSel.active;
+    const curInside = cur.line >= first && cur.line <= last;
+    const oldLen = doc.lineAt(cur.line).text.length;
+    const cmd = add ? 'editor.action.addCommentLine' : 'editor.action.removeCommentLine';
+    const run = async () => {
+      ed.selection = new vscode.Selection(new vscode.Position(first, 0), doc.lineAt(last).range.end);
+      await vscode.commands.executeCommand(cmd);
+    };
+    // Tras la operación el bloque abarca las líneas completas afectadas.
+    const finish = () => ({
+      b: doc.offsetAt(new vscode.Position(first, 0)),
+      e: doc.offsetAt(doc.lineAt(last).range.end),
+    });
+    if (m) await blockOpRun(ed, run, finish);
+    else await run();
+    if (selEqual || (!m && !origSel.isEmpty)) {
+      const r = finish();
+      ed.selection = new vscode.Selection(doc.positionAt(r.b), doc.positionAt(r.e));
+    } else {
+      const newLen = doc.lineAt(cur.line).text.length;
+      const col = curInside ? Math.max(0, Math.min(cur.character + (newLen - oldLen), newLen)) : cur.character;
+      const pos = new vscode.Position(cur.line, col);
+      ed.selection = new vscode.Selection(pos, pos);
+    }
+  }
+
   function wordAtCursor(ed) {
     const doc = ed.document;
     if (!ed.selection.isEmpty && ed.selection.isSingleLine) return doc.getText(ed.selection);
@@ -639,6 +696,10 @@ function activate(context) {
     // bloque (o de la selección, o la línea actual si no hay ninguno).
     blockIndent: (ed) => shiftLines(ed, +1),
     blockOutdent: (ed) => shiftLines(ed, -1),
+    // Comentar / descomentar las líneas del bloque (usa los comandos nativos
+    // para respetar el estilo de comentario de cada lenguaje).
+    blockComment: (ed) => commentLines(ed, true),
+    blockUncomment: (ed) => commentLines(ed, false),
     blockBegin: (ed) => {
       const m = getMarks(ed.document);
       m.b = off(ed);

@@ -11,6 +11,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Replace block
 - Open file under cursor
 - Block un/indent by a space
+- Block un/comment
 
 Dependency:
 
