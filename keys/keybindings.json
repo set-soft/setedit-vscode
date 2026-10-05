@@ -1,0 +1,351 @@
+[
+    // --- Archivos y Ventanas (Borland CUA) ---
+    {
+        "key": "f2",
+        "command": "workbench.action.files.save"
+    },
+    {
+        "key": "f3",
+        "command": "workbench.action.files.openFile"
+    },
+    {
+        "key": "alt+0",
+        "command": "workbench.action.quickOpen"
+    },    
+    {
+        "key": "alt+f3",
+        "command": "workbench.action.closeActiveEditor"
+    },
+
+    // --- Edición de Código ---
+    // Borrar línea actual (Ctrl+Y clásico)
+    {
+        "key": "ctrl+y",
+        "command": "editor.action.deleteLines",
+        "when": "textInputFocus && !editorReadonly"
+    },
+    // Alt + Backspace: Undo (Borland clásico)
+    {
+        "key": "alt+backspace",
+        "command": "undo",
+        "when": "textInputFocus && !editorReadonly"
+    },
+    // Shift + Alt + Backspace: Redo (Borland clásico)
+    {
+        "key": "shift+alt+backspace",
+        "command": "redo",
+        "when": "textInputFocus && !editorReadonly"
+    },
+
+    // Ctrl + PgUp: Ir al inicio del documento (cursorTop)
+    {
+        "key": "ctrl+pageup",
+        "command": "cursorTop",
+        "when": "textInputFocus"
+    },
+
+    // Ctrl + PgDn: Ir al final del documento (cursorBottom)
+    {
+        "key": "ctrl+pagedown",
+        "command": "cursorBottom",
+        "when": "textInputFocus"
+    },
+
+    // Ctrl + Shift + PgUp: Seleccionar hasta el inicio del documento
+    {
+        "key": "ctrl+shift+pageup",
+        "command": "cursorTopSelect",
+        "when": "textInputFocus"
+    },
+
+    // Ctrl + Shift + PgDn: Seleccionar hasta el final del documento
+    {
+        "key": "ctrl+shift+pagedown",
+        "command": "cursorBottomSelect",
+        "when": "textInputFocus"
+    },
+
+    // Marcadores usando Numbered Bookmarks de Alessandro Fragnani
+    // --- MARCADOR 1 ---
+    {
+        "key": "ctrl+k 1",
+        "command": "numberedBookmarks.toggleBookmark1",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 1",
+        "command": "numberedBookmarks.jumpToBookmark1",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 2 ---
+    {
+        "key": "ctrl+k 2",
+        "command": "numberedBookmarks.toggleBookmark2",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 2",
+        "command": "numberedBookmarks.jumpToBookmark2",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 2 ---
+    {
+        "key": "ctrl+k 3",
+        "command": "numberedBookmarks.toggleBookmark3",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 3",
+        "command": "numberedBookmarks.jumpToBookmark3",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 4 ---
+    {
+        "key": "ctrl+k 4",
+        "command": "numberedBookmarks.toggleBookmark4",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 4",
+        "command": "numberedBookmarks.jumpToBookmark4",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 5 ---
+    {
+        "key": "ctrl+k 5",
+        "command": "numberedBookmarks.toggleBookmark5",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 5",
+        "command": "numberedBookmarks.jumpToBookmark5",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 6 ---
+    {
+        "key": "ctrl+k 6",
+        "command": "numberedBookmarks.toggleBookmark6",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 6",
+        "command": "numberedBookmarks.jumpToBookmark6",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 7 ---
+    {
+        "key": "ctrl+k 7",
+        "command": "numberedBookmarks.toggleBookmark7",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 7",
+        "command": "numberedBookmarks.jumpToBookmark7",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 8 ---
+    {
+        "key": "ctrl+k 8",
+        "command": "numberedBookmarks.toggleBookmark8",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 8",
+        "command": "numberedBookmarks.jumpToBookmark8",
+        "when": "editorTextFocus"
+    },
+
+    // --- MARCADOR 9 ---
+    {
+        "key": "ctrl+k 9",
+        "command": "numberedBookmarks.toggleBookmark9",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+q 9",
+        "command": "numberedBookmarks.jumpToBookmark9",
+        "when": "editorTextFocus"
+    },
+
+    // --- Bloques Rectangulares / Columnas ---
+
+    // Ctrl + K, Shift + B: Activar / Desactivar modo de selección rectangular (Toggle)
+    {
+        "key": "ctrl+k shift+b",
+        "command": "editor.action.toggleColumnSelection",
+        "when": "editorTextFocus"
+    },
+
+    // Atajos directos para expandir el rectángulo con el teclado (estilo rápido)
+    // Shift + Alt + Flechas (Vienen por defecto, pero puedes verificar que estén activos):
+    {
+        "key": "shift+alt+down",
+        "command": "cursorColumnSelectDown",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "shift+alt+up",
+        "command": "cursorColumnSelectUp",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "shift+alt+right",
+        "command": "cursorColumnSelectRight",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "shift+alt+left",
+        "command": "cursorColumnSelectLeft",
+        "when": "textInputFocus"
+    },
+    // --- Compilación y Depuración estilo Turbo Pascal / Borland ---
+    // F9: Poner/quitar punto de interrupción (Breakpoint)
+    {
+        "key": "f9",
+        "command": "editor.debug.action.toggleBreakpoint",
+        "when": "editorTextFocus"
+    },
+    // Ctrl+F9: Ejecutar / Iniciar depuración
+    {
+        "key": "ctrl+f9",
+        "command": "workbench.action.debug.start"
+    },
+    // F7: Paso a paso por instrucciones (Trace into / Step into)
+    {
+        "key": "f7",
+        "command": "workbench.action.debug.stepInto",
+        "when": "inDebugMode"
+    },
+    // F8: Paso a paso por procedimientos (Step over)
+    {
+        "key": "f8",
+        "command": "workbench.action.debug.stepOver",
+        "when": "inDebugMode"
+    },
+    // Ctrl+F2: Detener depuración (Program Reset)
+    //{
+    //    "key": "ctrl+f2",
+    //    "command": "workbench.action.debug.stop",
+    //    "when": "inDebugMode"
+    //},
+    // F6: Siguiente archivo abierto
+    {
+        "key": "f6",
+        "command": "workbench.action.nextEditor"
+    },
+    // Shift + F6: Anterior archivo abierto
+    {
+        "key": "shift+f6",
+        "command": "workbench.action.previousEditor"
+    },
+    // Ctrl + Q, F: Buscar (Find)
+    {
+        "key": "ctrl+q f",
+        "command": "actions.find"
+    },
+    // Ctrl + Q, A: Buscar y Reemplazar (Find and Replace)
+    {
+        "key": "ctrl+q a",
+        "command": "editor.action.startFindReplaceAction"
+    },
+    {
+        "key": "escape",
+        "command": "borlandKit.blockHide",
+        "when": "editorTextFocus"
+    },     
+
+
+    // >>> borland-kit (generado, no editar) >>>
+    {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
+    {"key":"right","command":"borlandKit.exec","args":{"command":"cursorRight"},"when":"editorTextFocus"},
+    {"key":"up","command":"borlandKit.exec","args":{"command":"cursorUp"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"down","command":"borlandKit.exec","args":{"command":"cursorDown"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"shift+left","command":"borlandKit.exec","args":{"command":"cursorLeftSelect"},"when":"editorTextFocus"},
+    {"key":"shift+right","command":"borlandKit.exec","args":{"command":"cursorRightSelect"},"when":"editorTextFocus"},
+    {"key":"shift+up","command":"borlandKit.exec","args":{"command":"cursorUpSelect"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"shift+down","command":"borlandKit.exec","args":{"command":"cursorDownSelect"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"home","command":"borlandKit.exec","args":{"command":"cursorHome"},"when":"editorTextFocus"},
+    {"key":"end","command":"borlandKit.exec","args":{"command":"cursorEnd"},"when":"editorTextFocus"},
+    {"key":"shift+home","command":"borlandKit.exec","args":{"command":"cursorHomeSelect"},"when":"editorTextFocus"},
+    {"key":"shift+end","command":"borlandKit.exec","args":{"command":"cursorEndSelect"},"when":"editorTextFocus"},
+    {"key":"ctrl+home","command":"borlandKit.exec","args":{"command":"cursorTop"},"when":"editorTextFocus"},
+    {"key":"ctrl+end","command":"borlandKit.exec","args":{"command":"cursorBottom"},"when":"editorTextFocus"},
+    {"key":"ctrl+shift+home","command":"borlandKit.exec","args":{"command":"cursorTopSelect"},"when":"editorTextFocus"},
+    {"key":"ctrl+shift+end","command":"borlandKit.exec","args":{"command":"cursorBottomSelect"},"when":"editorTextFocus"},
+    {"key":"pageup","command":"borlandKit.exec","args":{"command":"cursorPageUp"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"pagedown","command":"borlandKit.exec","args":{"command":"cursorPageDown"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"shift+pageup","command":"borlandKit.exec","args":{"command":"cursorPageUpSelect"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"shift+pagedown","command":"borlandKit.exec","args":{"command":"cursorPageDownSelect"},"when":"editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible"},
+    {"key":"ctrl+left","command":"borlandKit.exec","args":{"command":"cursorWordLeft"},"when":"editorTextFocus"},
+    {"key":"ctrl+right","command":"borlandKit.exec","args":{"command":"cursorWordRight"},"when":"editorTextFocus"},
+    {"key":"ctrl+shift+left","command":"borlandKit.exec","args":{"command":"cursorWordLeftSelect"},"when":"editorTextFocus"},
+    {"key":"ctrl+shift+right","command":"borlandKit.exec","args":{"command":"cursorWordRightSelect"},"when":"editorTextFocus"},
+    {"key":"backspace","command":"borlandKit.exec","args":{"command":"deleteLeft"},"when":"editorTextFocus && !editorReadonly"},
+    {"key":"shift+backspace","command":"borlandKit.exec","args":{"command":"deleteLeft"},"when":"editorTextFocus && !editorReadonly"},
+    {"key":"delete","command":"borlandKit.exec","args":{"command":"deleteRight"},"when":"editorTextFocus && !editorReadonly"},
+    {"key":"ctrl+backspace","command":"borlandKit.exec","args":{"command":"deleteWordLeft"},"when":"editorTextFocus && !editorReadonly"},
+    {"key":"ctrl+delete","command":"borlandKit.exec","args":{"command":"deleteWordRight"},"when":"editorTextFocus && !editorReadonly"},
+    {"key":"ctrl+l","command":"borlandKit.exec","args":{"command":"borlandKit.replaceNext"},"when":"editorTextFocus"},
+    {"key":"ctrl+k b","command":"borlandKit.exec","args":{"command":"borlandKit.blockBegin"},"when":"editorTextFocus"},
+    {"key":"ctrl+k k","command":"borlandKit.exec","args":{"command":"borlandKit.blockEnd"},"when":"editorTextFocus"},
+    {"key":"ctrl+k h","command":"borlandKit.exec","args":{"command":"borlandKit.blockHide"},"when":"editorTextFocus"},
+    {"key":"ctrl+k c","command":"borlandKit.exec","args":{"command":"borlandKit.blockCopy"},"when":"editorTextFocus"},
+    {"key":"ctrl+k v","command":"borlandKit.exec","args":{"command":"borlandKit.blockMove"},"when":"editorTextFocus"},
+    {"key":"ctrl+k y","command":"borlandKit.exec","args":{"command":"borlandKit.blockDelete"},"when":"editorTextFocus"},
+    {"key":"ctrl+k w","command":"borlandKit.exec","args":{"command":"borlandKit.blockWrite"},"when":"editorTextFocus"},
+    {"key":"ctrl+k r","command":"borlandKit.exec","args":{"command":"borlandKit.blockRead"},"when":"editorTextFocus"},
+    {"key":"ctrl+w","command":"borlandKit.exec","args":{"command":"borlandKit.blockWrite"},"when":"editorTextFocus"},
+    {"key":"ctrl+r","command":"borlandKit.exec","args":{"command":"borlandKit.blockRead"},"when":"editorTextFocus"},
+    {"key":"ctrl+delete","command":"borlandKit.exec","args":{"command":"borlandKit.blockDelete"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"ctrl+insert","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCopy"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"shift+delete","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCut"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"ctrl+c","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCopy"},"when":"editorTextFocus && !editorHasSelection && borlandKit.hasBlock"},
+    {"key":"ctrl+x","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCut"},"when":"editorTextFocus && !editorHasSelection && borlandKit.hasBlock"},
+    {"key":"ctrl+shift+insert","command":"borlandKit.exec","args":{"command":"borlandKit.blockReplacePaste"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"f2","command":"borlandKit.exec","args":{"command":"workbench.action.files.save"}},
+    {"key":"f3","command":"borlandKit.exec","args":{"command":"workbench.action.files.openFile"}},
+    {"key":"alt+0","command":"borlandKit.exec","args":{"command":"workbench.action.quickOpen"}},
+    {"key":"alt+f3","command":"borlandKit.exec","args":{"command":"workbench.action.closeActiveEditor"}},
+    {"key":"ctrl+y","command":"borlandKit.exec","args":{"command":"editor.action.deleteLines"},"when":"textInputFocus && !editorReadonly"},
+    {"key":"alt+backspace","command":"borlandKit.exec","args":{"command":"undo"},"when":"textInputFocus && !editorReadonly"},
+    {"key":"shift+alt+backspace","command":"borlandKit.exec","args":{"command":"redo"},"when":"textInputFocus && !editorReadonly"},
+    {"key":"ctrl+pageup","command":"borlandKit.exec","args":{"command":"cursorTop"},"when":"textInputFocus"},
+    {"key":"ctrl+pagedown","command":"borlandKit.exec","args":{"command":"cursorBottom"},"when":"textInputFocus"},
+    {"key":"ctrl+shift+pageup","command":"borlandKit.exec","args":{"command":"cursorTopSelect"},"when":"textInputFocus"},
+    {"key":"ctrl+shift+pagedown","command":"borlandKit.exec","args":{"command":"cursorBottomSelect"},"when":"textInputFocus"},
+    {"key":"ctrl+k 1","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark1"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 1","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark1"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 2","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark2"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 2","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark2"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 3","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark3"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 3","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark3"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 4","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark4"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 4","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark4"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 5","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark5"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 5","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark5"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 6","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark6"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 6","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark6"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 7","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark7"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 7","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark7"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 8","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark8"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 8","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark8"},"when":"editorTextFocus"},
+    {"key":"ctrl+k 9","command":"borlandKit.exec","args":{"command":"numberedBookmarks.toggleBookmark9"},"when":"editorTextFocus"},
+    {"key":"ctrl+q 9","command":"borlandKit.exec","args":{"command":"numberedBookmarks.jumpToBookmark9"},"when":"editorTextFocus"},
+    {"key":"ctrl+k shift+b","command":"borlandKit.exec","args":{"command":"editor.action.toggleColumnSelection"},"when":"editorTextFocus"},
+    {"key":"shift+alt+down","command":"borlandKit.exec","args":{"command":"cursorColumnSelectDown"},"when":"textInputFocus"},
+    {"key":"shift+alt+up","command":"borlandKit.exec","args":{"command":"cursorColumnSelectUp"},"when":"textInputFocus"},
+    {"key":"shift+alt+right","command":"borlandKit.exec","args":{"command":"cursorColumnSelectRight"},"when":"textInputFocus"},
+    {"key":"shift+alt+left","command":"borlandKit.exec","args":{"command":"cursorColumnSelectLeft"},"when":"textInputFocus"},
+    {"key":"f6","command":"borlandKit.exec","args":{"command":"workbench.action.nextEditor"}},
+    {"key":"shift+f6","command":"borlandKit.exec","args":{"command":"workbench.action.previousEditor"}},
+    {"key":"ctrl+q f","command":"borlandKit.exec","args":{"command":"actions.find"}},
+    {"key":"ctrl+q a","command":"borlandKit.exec","args":{"command":"editor.action.startFindReplaceAction"}}
+    // <<< borland-kit <<<
+]

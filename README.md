@@ -11,6 +11,10 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Replace block
 - Open file under cursor
 
+Dependency:
+
+- `Numbered Bookmarks` by Alessandro Fragnani
+
 Wrapping:
 
 - `borlandKit.excludeFromWrapping` commands excluded from wrapping
