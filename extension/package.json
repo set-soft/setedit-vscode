@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"

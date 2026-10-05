@@ -355,7 +355,7 @@ function activate(context) {
       if (ed !== vscode.window.activeTextEditor) return;
       if (e.selections.length !== 1 || e.selections[0].isEmpty) return;
       const K = vscode.TextEditorSelectionChangeKind;
-      const ok = e.kind === K.Mouse || e.kind === K.Keyboard || (e.kind === K.Command && execActive > 0);
+      const ok = e.kind === K.Mouse || e.kind === K.Keyboard || execActive > 0;
       if (!ok) return;
       const doc = ed.document;
       const s = e.selections[0];
@@ -384,29 +384,40 @@ function activate(context) {
 
   const edCmds = {
     // Ctrl+L: "reemplazar siguiente" usando el buscar/reemplazar nativo.
-    // Abre el panel (conserva buscar/reemplazar/opciones) y aplica "replaceOne".
-    // replaceOne primero selecciona la coincidencia y recién en la siguiente
-    // llamada reemplaza; por eso se repite si el texto no cambió.
+    // Solo reemplaza: el cursor queda justo después del texto reemplazado,
+    // sin seleccionar ni mostrar la siguiente coincidencia. Si no hay nada
+    // para reemplazar, la selección original se restaura.
+    // (replaceOne nativo primero selecciona la coincidencia y recién en la
+    // siguiente llamada reemplaza; por eso se repite si el texto no cambió.)
     replaceNext: async (ed) => {
       const doc = ed.document;
+      const origSel = ed.selection;
+      let endOff = null;
       blockSelSuppressed = true;
+      const sub = vscode.workspace.onDidChangeTextDocument((ev) => {
+        if (ev.document === doc && ev.contentChanges.length && endOff === null) {
+          const c = ev.contentChanges[0];
+          endOff = c.rangeOffset + c.text.length; // fin del reemplazo, ya en el documento modificado
+        }
+      });
       try {
         await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
         await sleep(40);
-        for (let i = 0; i < 2; i++) {
-          let changed = false;
-          const sub = vscode.workspace.onDidChangeTextDocument((ev) => {
-            if (ev.document === doc && ev.contentChanges.length) changed = true;
-          });
-          try {
-            await vscode.commands.executeCommand('editor.action.replaceOne');
-            await sleep(40);
-          } finally { sub.dispose(); }
-          if (changed) break;
+        for (let i = 0; i < 2 && endOff === null; i++) {
+          await vscode.commands.executeCommand('editor.action.replaceOne');
+          await sleep(40);
         }
         await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
         await sleep(40);
+        if (endOff !== null) {
+          const pos = doc.positionAt(endOff);
+          ed.selection = new vscode.Selection(pos, pos);
+          ed.revealRange(new vscode.Range(pos, pos));
+        } else {
+          ed.selection = origSel;
+        }
       } finally {
+        sub.dispose();
         blockSelSuppressed = false;
       }
     },
