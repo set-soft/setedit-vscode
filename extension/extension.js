@@ -3,6 +3,7 @@ const vscode = require('vscode');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const crypto = require('crypto');
 
 // ------------------------------------------------------------ utilidades JSONC
 // kinds: 0 = código, 1 = string, 2 = comentario
@@ -57,11 +58,30 @@ function activate(context) {
   let macro = context.globalState.get('borlandKit.macro2', []);
   const rec = { on: false, steps: [] };
   let replaying = false;
-  let typeReg = null;
+  let execActive = 0;          // >0 mientras se ejecuta un comando vía exec/reproducción
+  let blockSelSuppressed = false;
 
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
   status.text = '$(record) REC';
   status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
+
+  const persistentSel = () => vscode.workspace.getConfiguration('borlandKit').get('persistentSelection', true);
+  const COLLAPSE_CMDS = new Set(['deleteLeft', 'deleteRight', 'deleteWordLeft', 'deleteWordRight']);
+
+  // Si la selección actual ES el bloque, se colapsa antes de escribir/borrar:
+  // así el bloque no se reemplaza ni se borra por tipear.
+  function collapseIfBlock() {
+    if (!persistentSel()) return;
+    const ed = vscode.window.activeTextEditor;
+    if (!ed || ed.selections.length !== 1 || ed.selection.isEmpty) return;
+    const m = validBlock(ed.document);
+    if (!m) return;
+    const doc = ed.document;
+    if (doc.offsetAt(ed.selection.start) === m.b && doc.offsetAt(ed.selection.end) === m.e) {
+      const a = ed.selection.active;
+      ed.selection = new vscode.Selection(a, a);
+    }
+  }
 
   function pushType(text) {
     const last = rec.steps[rec.steps.length - 1];
@@ -69,27 +89,28 @@ function activate(context) {
     else rec.steps.push({ t: 'type', text });
   }
 
+  // 'type' se sobreescribe siempre: graba el tipeo y evita reemplazar el bloque.
+  try {
+    context.subscriptions.push(vscode.commands.registerCommand('type', (args) => {
+      if (rec.on && !replaying && args && typeof args.text === 'string') pushType(args.text);
+      collapseIfBlock();
+      return vscode.commands.executeCommand('default:type', args);
+    }));
+  } catch (e) {
+    vscode.window.showWarningMessage('Borland Kit: otra extensión controla "type"; el tipeo no se grabará en macros.');
+  }
+
   function macroStart() {
     if (rec.on) return;
     rec.steps = [];
     rec.on = true;
     status.show();
-    try {
-      typeReg = vscode.commands.registerCommand('type', (args) => {
-        if (rec.on && !replaying && args && typeof args.text === 'string') pushType(args.text);
-        return vscode.commands.executeCommand('default:type', args);
-      });
-    } catch (e) {
-      typeReg = null;
-      vscode.window.showWarningMessage('No se pudo capturar el tipeo (otra extensión controla "type"). Los comandos sí se graban.');
-    }
   }
 
   function macroStop() {
     if (!rec.on) return;
     rec.on = false;
     status.hide();
-    if (typeReg) { typeReg.dispose(); typeReg = null; }
     macro = rec.steps;
     context.globalState.update('borlandKit.macro2', macro);
     vscode.window.setStatusBarMessage(`Macro grabada: ${macro.length} pasos`, 3000);
@@ -103,21 +124,30 @@ function activate(context) {
     if (!cmd) return;
     const args = typeof arg === 'object' ? arg.args : undefined;
     if (rec.on && !replaying) rec.steps.push({ t: 'cmd', c: cmd, a: args });
-    return runCommand(cmd, args);
+    if (COLLAPSE_CMDS.has(cmd)) collapseIfBlock();
+    execActive++;
+    try { return await runCommand(cmd, args); } finally { execActive--; }
   }
 
   async function macroPlay(times = 1) {
     if (rec.on) { vscode.window.showWarningMessage('Detené la grabación antes de reproducir.'); return; }
     if (!macro.length) { vscode.window.showInformationMessage('No hay macro grabada.'); return; }
     replaying = true;
+    execActive++;
     try {
       for (let n = 0; n < times; n++) {
         for (const st of macro) {
-          if (st.t === 'cmd') await runCommand(st.c, st.a);
-          else if (st.t === 'type') await vscode.commands.executeCommand('default:type', { text: st.text });
+          if (st.t === 'cmd') {
+            if (COLLAPSE_CMDS.has(st.c)) collapseIfBlock();
+            await runCommand(st.c, st.a);
+          } else if (st.t === 'type') {
+            collapseIfBlock();
+            await vscode.commands.executeCommand('default:type', { text: st.text });
+          }
         }
       }
     } finally {
+      execActive--;
       replaying = false;
     }
   }
@@ -214,12 +244,13 @@ function activate(context) {
 
   // ================================================================ BLOQUES
   const blocks = new Map(); // uri -> { b, e }
+  const opsMap = new Map(); // uri -> { undo: [], redo: [] }
   const deco = vscode.window.createTextEditorDecorationType({
     backgroundColor: new vscode.ThemeColor('editor.selectionBackground'),
     overviewRulerColor: new vscode.ThemeColor('editor.selectionBackground'),
     overviewRulerLane: vscode.OverviewRulerLane.Center,
   });
-  let lastPath = '';
+  let lastDir = context.globalState.get('borlandKit.lastDir', '');
 
   const key = (doc) => doc.uri.toString();
   const getMarks = (doc) => {
@@ -231,6 +262,13 @@ function activate(context) {
     const m = blocks.get(key(doc));
     return m && m.b != null && m.e != null && m.b < m.e ? m : null;
   };
+  const opsOf = (doc) => {
+    const k = key(doc);
+    if (!opsMap.has(k)) opsMap.set(k, { undo: [], redo: [] });
+    return opsMap.get(k);
+  };
+  const snapMarks = (doc) => { const m = getMarks(doc); return { b: m.b, e: m.e }; };
+  const hashDoc = (doc) => crypto.createHash('md5').update(doc.getText()).digest('hex');
   const off = (ed) => ed.document.offsetAt(ed.selection.active);
   const rng = (doc, b, e) => new vscode.Range(doc.positionAt(b), doc.positionAt(e));
   const lenInDoc = (doc, text) =>
@@ -240,7 +278,11 @@ function activate(context) {
     const m = validBlock(ed.document);
     ed.setDecorations(deco, m ? [rng(ed.document, m.b, m.e)] : []);
   }
-  function refreshAll() { vscode.window.visibleTextEditors.forEach(refresh); }
+  function refreshAll() {
+    vscode.window.visibleTextEditors.forEach(refresh);
+    const ed = vscode.window.activeTextEditor;
+    vscode.commands.executeCommand('setContext', 'borlandKit.hasBlock', !!(ed && validBlock(ed.document)));
+  }
 
   function adjustMark(m, changes, isEnd) {
     let shift = 0;
@@ -264,15 +306,69 @@ function activate(context) {
     refreshAll();
   }
 
+  // Undo/Redo de operaciones de bloque: se compara el texto resultante con el
+  // que tenía el documento antes/después de la operación y se restauran las marcas.
+  function onUndoRedo(e) {
+    const R = vscode.TextDocumentChangeReason;
+    if (!e.contentChanges.length) return;
+    const doc = e.document;
+    const o = opsOf(doc);
+    if (R && e.reason === R.Undo) {
+      const top = o.undo[o.undo.length - 1];
+      if (top && hashDoc(doc) === top.hBefore) {
+        o.undo.pop(); o.redo.push(top);
+        const m = getMarks(doc); m.b = top.before.b; m.e = top.before.e; refreshAll();
+      }
+    } else if (R && e.reason === R.Redo) {
+      const top = o.redo[o.redo.length - 1];
+      if (top && hashDoc(doc) === top.hAfter) {
+        o.redo.pop(); o.undo.push(top);
+        const m = getMarks(doc); m.b = top.after.b; m.e = top.after.e; refreshAll();
+      }
+    } else {
+      o.redo.length = 0;
+    }
+  }
+
+  async function blockOp(ed, editFn, afterFn) {
+    const doc = ed.document;
+    const o = opsOf(doc);
+    const before = snapMarks(doc);
+    const hBefore = hashDoc(doc);
+    const ok = await ed.edit(editFn);
+    if (!ok) return;
+    const after = afterFn();
+    setBlock(ed, after.b, after.e);
+    o.undo.push({ before, after, hBefore, hAfter: hashDoc(doc) });
+    if (o.undo.length > 100) o.undo.shift();
+    o.redo.length = 0;
+  }
+
   context.subscriptions.push(
-    vscode.workspace.onDidChangeTextDocument(adjustBlocks),
+    vscode.workspace.onDidChangeTextDocument((e) => { adjustBlocks(e); onUndoRedo(e); }),
     vscode.window.onDidChangeActiveTextEditor(refreshAll),
-    vscode.workspace.onDidCloseTextDocument((d) => blocks.delete(key(d)))
+    vscode.workspace.onDidCloseTextDocument((d) => { blocks.delete(key(d)); opsMap.delete(key(d)); }),
+    // Selecciones hechas con mouse o teclado pasan a ser el bloque persistente.
+    vscode.window.onDidChangeTextEditorSelection((e) => {
+      if (!persistentSel() || blockSelSuppressed) return;
+      const ed = e.textEditor;
+      if (ed !== vscode.window.activeTextEditor) return;
+      if (e.selections.length !== 1 || e.selections[0].isEmpty) return;
+      const K = vscode.TextEditorSelectionChangeKind;
+      const ok = e.kind === K.Mouse || e.kind === K.Keyboard || (e.kind === K.Command && execActive > 0);
+      if (!ok) return;
+      const doc = ed.document;
+      const s = e.selections[0];
+      const m = getMarks(doc);
+      m.b = doc.offsetAt(s.start);
+      m.e = doc.offsetAt(s.end);
+      refreshAll();
+    })
   );
 
   function needBlock(ed) {
     const m = validBlock(ed.document);
-    if (!m) vscode.window.showWarningMessage('No hay bloque marcado (Ctrl+K B / Ctrl+K K).');
+    if (!m) vscode.window.showWarningMessage('No hay bloque marcado (Ctrl+K B / Ctrl+K K, o seleccioná texto).');
     return m;
   }
   function setBlock(ed, b, e) {
@@ -280,87 +376,39 @@ function activate(context) {
     m.b = b; m.e = e;
     refreshAll();
   }
-  function resolvePath(input, doc) {
-    let p = input.trim();
-    if (p.startsWith('~')) p = path.join(os.homedir(), p.slice(1));
-    if (!path.isAbsolute(p)) {
-      const base = !doc.isUntitled
-        ? path.dirname(doc.fileName)
-        : (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0].uri.fsPath) || os.homedir();
-      p = path.join(base, p);
-    }
-    return p;
-  }
-
-  // ---- Reemplazo repetible (Ctrl+Q A define, Ctrl+L aplica al siguiente)
-  // La API no permite leer el estado del panel de búsqueda nativo, así que
-  // la extensión guarda el suyo propio.
-  let repl = context.globalState.get('borlandKit.replace',
-    { find: '', repl: '', regex: false, caseSensitive: false, wholeWord: false });
-  const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  function buildRe() {
-    let src = repl.regex ? repl.find : escapeRe(repl.find);
-    if (repl.wholeWord) src = `\\b(?:${src})\\b`;
-    return new RegExp(src, 'gm' + (repl.caseSensitive ? '' : 'i'));
-  }
-  function expandRepl(m, tpl) {
-    if (!repl.regex) return tpl;
-    return tpl.replace(/\$(\d+|&|\$)|\\([nt\\])/g, (all, a, b) => {
-      if (a !== undefined) {
-        if (a === '$') return '$';
-        if (a === '&') return m[0];
-        const g = m[parseInt(a, 10)];
-        return g === undefined ? '' : g;
-      }
-      return b === 'n' ? '\n' : b === 't' ? '\t' : '\\';
-    });
-  }
+  const dialogDir = (doc) => lastDir || (!doc.isUntitled ? path.dirname(doc.fileName) : os.homedir());
+  const rememberDir = (fsPath) => {
+    lastDir = path.dirname(fsPath);
+    context.globalState.update('borlandKit.lastDir', lastDir);
+  };
 
   const edCmds = {
-    replaceSetup: async (ed) => {
-      const sel0 = ed.selection.isEmpty ? '' : ed.document.getText(ed.selection);
-      const find = await vscode.window.showInputBox({ prompt: 'Buscar', value: sel0 || repl.find });
-      if (!find) return;
-      const rep = await vscode.window.showInputBox({ prompt: 'Reemplazar por', value: repl.repl });
-      if (rep === undefined) return;
-      const items = [
-        { label: 'Expresión regular', k: 'regex', picked: repl.regex },
-        { label: 'Distinguir mayúsculas', k: 'caseSensitive', picked: repl.caseSensitive },
-        { label: 'Palabra completa', k: 'wholeWord', picked: repl.wholeWord },
-      ];
-      const chosen = await vscode.window.showQuickPick(items, { canPickMany: true, placeHolder: 'Opciones (Enter para aceptar)' });
-      if (!chosen) return;
-      const next = { find, repl: rep, regex: false, caseSensitive: false, wholeWord: false };
-      chosen.forEach((c) => { next[c.k] = true; });
-      const prev = repl;
-      repl = next;
-      try { buildRe(); } catch (e) {
-        repl = prev;
-        vscode.window.showErrorMessage(`Expresión regular inválida: ${e.message}`);
-        return;
-      }
-      context.globalState.update('borlandKit.replace', repl);
-      vscode.window.setStatusBarMessage('Reemplazo memorizado. Ctrl+L: reemplazar siguiente.', 4000);
-    },
+    // Ctrl+L: "reemplazar siguiente" usando el buscar/reemplazar nativo.
+    // Abre el panel (conserva buscar/reemplazar/opciones) y aplica "replaceOne".
+    // replaceOne primero selecciona la coincidencia y recién en la siguiente
+    // llamada reemplaza; por eso se repite si el texto no cambió.
     replaceNext: async (ed) => {
-      if (!repl.find) { vscode.window.showWarningMessage('Primero definí el reemplazo (Ctrl+Q A).'); return; }
       const doc = ed.document;
-      let re;
-      try { re = buildRe(); } catch (e) { vscode.window.showErrorMessage(e.message); return; }
-      const text = doc.getText();
-      re.lastIndex = doc.offsetAt(ed.selection.start);
-      let m = re.exec(text);
-      while (m && m[0].length === 0) {
-        re.lastIndex++;
-        m = re.lastIndex > text.length ? null : re.exec(text);
+      blockSelSuppressed = true;
+      try {
+        await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
+        await sleep(40);
+        for (let i = 0; i < 2; i++) {
+          let changed = false;
+          const sub = vscode.workspace.onDidChangeTextDocument((ev) => {
+            if (ev.document === doc && ev.contentChanges.length) changed = true;
+          });
+          try {
+            await vscode.commands.executeCommand('editor.action.replaceOne');
+            await sleep(40);
+          } finally { sub.dispose(); }
+          if (changed) break;
+        }
+        await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
+        await sleep(40);
+      } finally {
+        blockSelSuppressed = false;
       }
-      if (!m) { vscode.window.setStatusBarMessage('No hay más coincidencias', 3000); return; }
-      const out = expandRepl(m, repl.repl);
-      const s = m.index;
-      await ed.edit((eb) => eb.replace(rng(doc, s, s + m[0].length), out));
-      const pos = doc.positionAt(s + lenInDoc(doc, out));
-      ed.selection = new vscode.Selection(pos, pos);
-      ed.revealRange(new vscode.Range(pos, pos));
     },
     blockBegin: (ed) => {
       const m = getMarks(ed.document);
@@ -379,34 +427,41 @@ function activate(context) {
       const m = needBlock(ed); if (!m) return;
       ed.selection = new vscode.Selection(ed.document.positionAt(m.b), ed.document.positionAt(m.e));
     },
+    blockClipCopy: async (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      await vscode.env.clipboard.writeText(ed.document.getText(rng(ed.document, m.b, m.e)));
+    },
+    blockClipCut: async (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      const doc = ed.document;
+      const r = rng(doc, m.b, m.e);
+      await vscode.env.clipboard.writeText(doc.getText(r));
+      await blockOp(ed, (eb) => eb.delete(r), () => ({ b: null, e: null }));
+    },
     blockCopy: async (ed) => {
       const m = needBlock(ed); if (!m) return;
       const doc = ed.document;
       const text = doc.getText(rng(doc, m.b, m.e));
       const p = off(ed);
-      await ed.edit((eb) => eb.insert(doc.positionAt(p), text));
-      setBlock(ed, p, p + text.length);
+      await blockOp(ed, (eb) => eb.insert(doc.positionAt(p), text), () => ({ b: p, e: p + text.length }));
     },
     blockMove: async (ed) => {
       const m = needBlock(ed); if (!m) return;
       const doc = ed.document;
       const p = off(ed);
       if (p > m.b && p < m.e) { vscode.window.showWarningMessage('El cursor está dentro del bloque.'); return; }
-      const text = doc.getText(rng(doc, m.b, m.e));
-      const len = m.e - m.b;
-      const b = m.b, e = m.e;
-      await ed.edit((eb) => {
+      const b = m.b, e = m.e, len = e - b;
+      const text = doc.getText(rng(doc, b, e));
+      const ns = p >= e ? p - len : p;
+      await blockOp(ed, (eb) => {
         eb.delete(rng(doc, b, e));
         eb.insert(doc.positionAt(p), text);
-      });
-      const ns = p >= e ? p - len : p;
-      setBlock(ed, ns, ns + len);
+      }, () => ({ b: ns, e: ns + len }));
     },
     blockDelete: async (ed) => {
       const m = needBlock(ed); if (!m) return;
       const r = rng(ed.document, m.b, m.e);
-      await ed.edit((eb) => eb.delete(r));
-      setBlock(ed, null, null);
+      await blockOp(ed, (eb) => eb.delete(r), () => ({ b: null, e: null }));
     },
     blockWrite: async (ed) => {
       const doc = ed.document;
@@ -415,36 +470,41 @@ function activate(context) {
       if (m) text = doc.getText(rng(doc, m.b, m.e));
       else if (!ed.selection.isEmpty) text = ed.selections.map((s) => doc.getText(s)).join(doc.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n');
       else { vscode.window.showWarningMessage('No hay bloque ni selección para escribir.'); return; }
-      const input = await vscode.window.showInputBox({ prompt: 'Escribir bloque en archivo', value: lastPath });
-      if (!input) return;
-      const target = resolvePath(input, doc);
-      if (fs.existsSync(target)) {
-        const ans = await vscode.window.showWarningMessage(`${target} ya existe. ¿Sobrescribir?`, { modal: true }, 'Sobrescribir');
-        if (ans !== 'Sobrescribir') return;
-      }
+      const uri = await vscode.window.showSaveDialog({
+        title: 'Escribir bloque a archivo',
+        saveLabel: 'Escribir bloque',
+        defaultUri: vscode.Uri.file(path.join(dialogDir(doc), 'bloque.txt')),
+      });
+      if (!uri) return;
       try {
-        fs.writeFileSync(target, text);
-        lastPath = input;
-        vscode.window.setStatusBarMessage(`Bloque escrito en ${target}`, 3000);
+        await vscode.workspace.fs.writeFile(uri, Buffer.from(text, 'utf8'));
+        rememberDir(uri.fsPath);
+        vscode.window.setStatusBarMessage(`Bloque escrito en ${uri.fsPath}`, 3000);
       } catch (err) {
         vscode.window.showErrorMessage(`No se pudo escribir: ${err.message}`);
       }
     },
     blockRead: async (ed) => {
       const doc = ed.document;
-      const input = await vscode.window.showInputBox({ prompt: 'Leer archivo en la posición del cursor', value: lastPath });
-      if (!input) return;
+      const uris = await vscode.window.showOpenDialog({
+        title: 'Leer archivo en la posición del cursor',
+        openLabel: 'Leer',
+        canSelectMany: false,
+        canSelectFolders: false,
+        defaultUri: vscode.Uri.file(dialogDir(doc) + path.sep),
+      });
+      if (!uris || !uris.length) return;
       let text;
       try {
-        text = fs.readFileSync(resolvePath(input, doc), 'utf8');
+        text = Buffer.from(await vscode.workspace.fs.readFile(uris[0])).toString('utf8');
       } catch (err) {
         vscode.window.showErrorMessage(`No se pudo leer: ${err.message}`);
         return;
       }
-      lastPath = input;
+      rememberDir(uris[0].fsPath);
       const p = off(ed);
-      await ed.edit((eb) => eb.insert(doc.positionAt(p), text));
-      setBlock(ed, p, p + lenInDoc(doc, text));
+      const len = lenInDoc(doc, text);
+      await blockOp(ed, (eb) => eb.insert(doc.positionAt(p), text), () => ({ b: p, e: p + len }));
     },
   };
 
@@ -467,7 +527,7 @@ function activate(context) {
       if (ed) return fn(ed);
     }));
   }
-  context.subscriptions.push(status, deco, { dispose: () => typeReg && typeReg.dispose() });
+  context.subscriptions.push(status, deco);
 }
 
 function deactivate() {}

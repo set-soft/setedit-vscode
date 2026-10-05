@@ -2,60 +2,202 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "local",
-  "engines": { "vscode": "^1.80.0" },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
   "main": "./extension.js",
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "configuration": {
       "title": "Borland Kit",
       "properties": {
         "borlandKit.excludeFromWrapping": {
           "type": "array",
-          "items": { "type": "string" },
-          "default": ["workbench.action.debug.", "editor.debug.action."],
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "workbench.action.debug.",
+            "editor.debug.action."
+          ],
           "description": "Prefijos de comandos de tu keybindings.json que NO se envuelven (no se graban en macros)."
+        },
+        "borlandKit.persistentSelection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Las selecciones hechas con mouse o teclado quedan como bloque persistente (no se reemplazan al escribir ni se pierden al mover el cursor)."
         }
       }
     },
     "commands": [
-      { "command": "borlandKit.installKeybindings", "title": "Borland Kit: Instalar atajos grabables" },
-      { "command": "borlandKit.macroStart", "title": "Borland Kit: Grabar macro" },
-      { "command": "borlandKit.macroStop", "title": "Borland Kit: Detener grabación" },
-      { "command": "borlandKit.macroPlay", "title": "Borland Kit: Reproducir macro" },
-      { "command": "borlandKit.macroPlayN", "title": "Borland Kit: Reproducir macro N veces" },
-      { "command": "borlandKit.exec", "title": "Borland Kit: Ejecutar comando (grabable)" },
-      { "command": "borlandKit.replaceSetup", "title": "Borland Kit: Definir buscar/reemplazar" },
-      { "command": "borlandKit.replaceNext", "title": "Borland Kit: Reemplazar siguiente" },
-      { "command": "borlandKit.blockBegin", "title": "Borland Kit: Inicio de bloque" },
-      { "command": "borlandKit.blockEnd", "title": "Borland Kit: Fin de bloque" },
-      { "command": "borlandKit.blockHide", "title": "Borland Kit: Ocultar bloque" },
-      { "command": "borlandKit.blockSelect", "title": "Borland Kit: Convertir bloque en selección" },
-      { "command": "borlandKit.blockCopy", "title": "Borland Kit: Copiar bloque al cursor" },
-      { "command": "borlandKit.blockMove", "title": "Borland Kit: Mover bloque al cursor" },
-      { "command": "borlandKit.blockDelete", "title": "Borland Kit: Borrar bloque" },
-      { "command": "borlandKit.blockWrite", "title": "Borland Kit: Escribir bloque a archivo" },
-      { "command": "borlandKit.blockRead", "title": "Borland Kit: Leer archivo en el cursor" }
+      {
+        "command": "borlandKit.installKeybindings",
+        "title": "Borland Kit: Instalar atajos grabables"
+      },
+      {
+        "command": "borlandKit.macroStart",
+        "title": "Borland Kit: Grabar macro"
+      },
+      {
+        "command": "borlandKit.macroStop",
+        "title": "Borland Kit: Detener grabación"
+      },
+      {
+        "command": "borlandKit.macroPlay",
+        "title": "Borland Kit: Reproducir macro"
+      },
+      {
+        "command": "borlandKit.macroPlayN",
+        "title": "Borland Kit: Reproducir macro N veces"
+      },
+      {
+        "command": "borlandKit.exec",
+        "title": "Borland Kit: Ejecutar comando (grabable)"
+      },
+      {
+        "command": "borlandKit.replaceNext",
+        "title": "Borland Kit: Reemplazar siguiente"
+      },
+      {
+        "command": "borlandKit.blockBegin",
+        "title": "Borland Kit: Inicio de bloque"
+      },
+      {
+        "command": "borlandKit.blockEnd",
+        "title": "Borland Kit: Fin de bloque"
+      },
+      {
+        "command": "borlandKit.blockHide",
+        "title": "Borland Kit: Ocultar bloque"
+      },
+      {
+        "command": "borlandKit.blockSelect",
+        "title": "Borland Kit: Convertir bloque en selección"
+      },
+      {
+        "command": "borlandKit.blockCopy",
+        "title": "Borland Kit: Copiar bloque al cursor"
+      },
+      {
+        "command": "borlandKit.blockMove",
+        "title": "Borland Kit: Mover bloque al cursor"
+      },
+      {
+        "command": "borlandKit.blockDelete",
+        "title": "Borland Kit: Borrar bloque"
+      },
+      {
+        "command": "borlandKit.blockWrite",
+        "title": "Borland Kit: Escribir bloque a archivo"
+      },
+      {
+        "command": "borlandKit.blockRead",
+        "title": "Borland Kit: Leer archivo en el cursor"
+      },
+      {
+        "command": "borlandKit.blockClipCopy",
+        "title": "Borland Kit: Copiar bloque al portapapeles"
+      },
+      {
+        "command": "borlandKit.blockClipCut",
+        "title": "Borland Kit: Cortar bloque al portapapeles"
+      }
     ],
     "keybindings": [
-      { "key": "shift+f10", "command": "borlandKit.macroStart" },
-      { "key": "alt+f10", "command": "borlandKit.macroStop" },
-      { "key": "ctrl+f10", "command": "borlandKit.macroPlay" },
-
-      { "key": "ctrl+q a", "command": "borlandKit.replaceSetup", "when": "editorTextFocus" },
-      { "key": "ctrl+l", "command": "borlandKit.replaceNext", "when": "editorTextFocus" },
-
-      { "key": "ctrl+k b", "command": "borlandKit.blockBegin", "when": "editorTextFocus" },
-      { "key": "ctrl+k k", "command": "borlandKit.blockEnd", "when": "editorTextFocus" },
-      { "key": "ctrl+k h", "command": "borlandKit.blockHide", "when": "editorTextFocus" },
-      { "key": "ctrl+k c", "command": "borlandKit.blockCopy", "when": "editorTextFocus" },
-      { "key": "ctrl+k v", "command": "borlandKit.blockMove", "when": "editorTextFocus" },
-      { "key": "ctrl+k y", "command": "borlandKit.blockDelete", "when": "editorTextFocus" },
-      { "key": "ctrl+k w", "command": "borlandKit.blockWrite", "when": "editorTextFocus" },
-      { "key": "ctrl+k r", "command": "borlandKit.blockRead", "when": "editorTextFocus" },
-      { "key": "ctrl+w", "command": "borlandKit.blockWrite", "when": "editorTextFocus" },
-      { "key": "ctrl+r", "command": "borlandKit.blockRead", "when": "editorTextFocus" }
-    ]
+      {
+        "key": "shift+f10",
+        "command": "borlandKit.macroStart"
+      },
+      {
+        "key": "alt+f10",
+        "command": "borlandKit.macroStop"
+      },
+      {
+        "key": "ctrl+f10",
+        "command": "borlandKit.macroPlay"
+      },
+      {
+        "key": "ctrl+l",
+        "command": "borlandKit.replaceNext",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k b",
+        "command": "borlandKit.blockBegin",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k k",
+        "command": "borlandKit.blockEnd",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k h",
+        "command": "borlandKit.blockHide",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k c",
+        "command": "borlandKit.blockCopy",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k v",
+        "command": "borlandKit.blockMove",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k y",
+        "command": "borlandKit.blockDelete",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k w",
+        "command": "borlandKit.blockWrite",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k r",
+        "command": "borlandKit.blockRead",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+w",
+        "command": "borlandKit.blockWrite",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+r",
+        "command": "borlandKit.blockRead",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+insert",
+        "command": "borlandKit.blockClipCopy",
+        "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "shift+delete",
+        "command": "borlandKit.blockClipCut",
+        "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "ctrl+c",
+        "command": "borlandKit.blockClipCopy",
+        "when": "editorTextFocus && !editorHasSelection && borlandKit.hasBlock"
+      },
+      {
+        "key": "ctrl+x",
+        "command": "borlandKit.blockClipCut",
+        "when": "editorTextFocus && !editorHasSelection && borlandKit.hasBlock"
+      }
+    ],
+    "configurationDefaults": {
+      "editor.find.seedSearchStringFromSelection": "never"
+    }
   }
 }
