@@ -401,6 +401,15 @@ function activate(context) {
     context.globalState.update('borlandKit.lastDir2', lastDir);
   };
 
+  function wordAtCursor(ed) {
+    const doc = ed.document;
+    if (!ed.selection.isEmpty && ed.selection.isSingleLine) return doc.getText(ed.selection);
+    const r = doc.getWordRangeAtPosition(ed.selection.active);
+    return r ? doc.getText(r) : '';
+  }
+  const quickOpenWithWord = (ed, prefix) =>
+    vscode.commands.executeCommand('workbench.action.quickOpen', prefix + wordAtCursor(ed));
+
   const edCmds = {
     // Ctrl+L: "reemplazar siguiente" usando el buscar/reemplazar nativo.
     // Solo reemplaza: el cursor queda justo después del texto reemplazado,
@@ -440,6 +449,10 @@ function activate(context) {
         blockSelSuppressed = false;
       }
     },
+    // Alt+F2 / Alt+Shift+F2: lista de símbolos del archivo / del proyecto,
+    // filtrada con la palabra bajo el cursor (o la selección).
+    symbolsInFile: (ed) => quickOpenWithWord(ed, '@'),
+    symbolsInWorkspace: (ed) => quickOpenWithWord(ed, '#'),
     blockBegin: (ed) => {
       const m = getMarks(ed.document);
       m.b = off(ed);

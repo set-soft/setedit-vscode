@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"
@@ -120,6 +120,14 @@
       {
         "command": "borlandKit.blockClipCut",
         "title": "Borland Kit: Cortar bloque al portapapeles"
+      },
+      {
+        "command": "borlandKit.symbolsInFile",
+        "title": "Borland Kit: Símbolos del archivo (palabra bajo el cursor)"
+      },
+      {
+        "command": "borlandKit.symbolsInWorkspace",
+        "title": "Borland Kit: Símbolos del proyecto (palabra bajo el cursor)"
       }
     ],
     "keybindings": [
@@ -209,6 +217,20 @@
         "key": "ctrl+x",
         "command": "borlandKit.blockClipCut",
         "when": "editorTextFocus && !editorHasSelection && borlandKit.hasBlock"
+      },
+      {
+        "key": "alt+f2",
+        "command": "borlandKit.symbolsInFile",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "alt+shift+f2",
+        "command": "borlandKit.symbolsInWorkspace",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+j",
+        "command": "workbench.action.gotoLine"
       }
     ],
     "configurationDefaults": {
