@@ -546,6 +546,42 @@ function activate(context) {
     }
   }
 
+  async function shiftLines(ed, dir) {
+    const doc = ed.document;
+    const m = validBlock(doc);
+    let b, e;
+    if (m) { b = m.b; e = m.e; }
+    else if (!ed.selection.isEmpty) { b = doc.offsetAt(ed.selection.start); e = doc.offsetAt(ed.selection.end); }
+    else { b = e = off(ed); }
+    const sp = doc.positionAt(b), ep = doc.positionAt(e);
+    const first = sp.line;
+    let last = ep.line;
+    if (e > b && ep.character === 0 && last > first) last--; // un bloque que termina en columna 0 no incluye esa línea
+    const starts = [];
+    for (let l = first; l <= last; l++) {
+      const line = doc.lineAt(l);
+      if (dir > 0) { if (line.text.length > 0) starts.push(line); }
+      else if (line.text.startsWith(' ')) starts.push(line);
+    }
+    if (!starts.length) return;
+    const selEqual = !ed.selection.isEmpty
+      && doc.offsetAt(ed.selection.start) === b && doc.offsetAt(ed.selection.end) === e;
+    const fsOff = doc.offsetAt(doc.lineAt(first).range.start);
+    const firstChanged = starts[0].lineNumber === first;
+    const b2 = b + (firstChanged && b > fsOff ? dir : 0);
+    const e2 = e + dir * starts.length;
+    const editFn = (eb) => {
+      for (const ln of starts) {
+        const pos = ln.range.start;
+        if (dir > 0) eb.insert(pos, ' ');
+        else eb.delete(new vscode.Range(pos, pos.translate(0, 1)));
+      }
+    };
+    if (m) await blockOp(ed, editFn, () => ({ b: b2, e: Math.max(e2, b2) }));
+    else await ed.edit(editFn);
+    if (selEqual) ed.selection = new vscode.Selection(doc.positionAt(b2), doc.positionAt(e2));
+  }
+
   function wordAtCursor(ed) {
     const doc = ed.document;
     if (!ed.selection.isEmpty && ed.selection.isSingleLine) return doc.getText(ed.selection);
@@ -599,6 +635,10 @@ function activate(context) {
     symbolsInFile: (ed) => quickOpenWithWord(ed, '@'),
     symbolsInWorkspace: (ed) => quickOpenWithWord(ed, '#'),
     openFileUnderCursor: (ed) => openFileUnderCursor(ed),
+    // Ctrl+K I / Ctrl+K U: indentar / desindentar un espacio las líneas del
+    // bloque (o de la selección, o la línea actual si no hay ninguno).
+    blockIndent: (ed) => shiftLines(ed, +1),
+    blockOutdent: (ed) => shiftLines(ed, -1),
     blockBegin: (ed) => {
       const m = getMarks(ed.document);
       m.b = off(ed);

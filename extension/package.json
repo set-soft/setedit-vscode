@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"
@@ -141,6 +141,14 @@
       {
         "command": "borlandKit.openFileUnderCursor",
         "title": "Borland Kit: Abrir archivo o URL bajo el cursor"
+      },
+      {
+        "command": "borlandKit.blockIndent",
+        "title": "Borland Kit: Indentar bloque un espacio"
+      },
+      {
+        "command": "borlandKit.blockOutdent",
+        "title": "Borland Kit: Desindentar bloque un espacio"
       }
     ],
     "keybindings": [
@@ -259,6 +267,16 @@
         "key": "ctrl+enter",
         "command": "borlandKit.openFileUnderCursor",
         "when": "editorTextFocus && !suggestWidgetVisible"
+      },
+      {
+        "key": "ctrl+k i",
+        "command": "borlandKit.blockIndent",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k u",
+        "command": "borlandKit.blockOutdent",
+        "when": "editorTextFocus"
       }
     ],
     "configurationDefaults": {
