@@ -5,6 +5,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Block read/write using Ctrl+K R/W
 - Commands to record macros
 - Mechanism to simply wrap defined keys so they can be recorded
+- Rpeatable search and replace
 
 Wrapping:
 

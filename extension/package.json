@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "local",
   "engines": { "vscode": "^1.80.0" },
   "main": "./extension.js",
@@ -26,6 +26,8 @@
       { "command": "borlandKit.macroPlay", "title": "Borland Kit: Reproducir macro" },
       { "command": "borlandKit.macroPlayN", "title": "Borland Kit: Reproducir macro N veces" },
       { "command": "borlandKit.exec", "title": "Borland Kit: Ejecutar comando (grabable)" },
+      { "command": "borlandKit.replaceSetup", "title": "Borland Kit: Definir buscar/reemplazar" },
+      { "command": "borlandKit.replaceNext", "title": "Borland Kit: Reemplazar siguiente" },
       { "command": "borlandKit.blockBegin", "title": "Borland Kit: Inicio de bloque" },
       { "command": "borlandKit.blockEnd", "title": "Borland Kit: Fin de bloque" },
       { "command": "borlandKit.blockHide", "title": "Borland Kit: Ocultar bloque" },
@@ -40,6 +42,9 @@
       { "key": "shift+f10", "command": "borlandKit.macroStart" },
       { "key": "alt+f10", "command": "borlandKit.macroStop" },
       { "key": "ctrl+f10", "command": "borlandKit.macroPlay" },
+
+      { "key": "ctrl+q a", "command": "borlandKit.replaceSetup", "when": "editorTextFocus" },
+      { "key": "ctrl+l", "command": "borlandKit.replaceNext", "when": "editorTextFocus" },
 
       { "key": "ctrl+k b", "command": "borlandKit.blockBegin", "when": "editorTextFocus" },
       { "key": "ctrl+k k", "command": "borlandKit.blockEnd", "when": "editorTextFocus" },

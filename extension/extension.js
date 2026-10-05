@@ -184,7 +184,7 @@ function activate(context) {
 
     const exclude = vscode.workspace.getConfiguration('borlandKit').get('excludeFromWrapping', []);
     const blockKeys = (context.extension.packageJSON.contributes.keybindings || [])
-      .filter((b) => b.command.startsWith('borlandKit.block'))
+      .filter((b) => b.command.startsWith('borlandKit.block') || b.command === 'borlandKit.replaceNext')
       .map((b) => wrap(b.key, b.command, undefined, b.when));
     const userWrapped = (Array.isArray(user) ? user : [])
       .filter((e) => e && typeof e.key === 'string' && typeof e.command === 'string'
@@ -292,7 +292,76 @@ function activate(context) {
     return p;
   }
 
+  // ---- Reemplazo repetible (Ctrl+Q A define, Ctrl+L aplica al siguiente)
+  // La API no permite leer el estado del panel de búsqueda nativo, así que
+  // la extensión guarda el suyo propio.
+  let repl = context.globalState.get('borlandKit.replace',
+    { find: '', repl: '', regex: false, caseSensitive: false, wholeWord: false });
+  const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  function buildRe() {
+    let src = repl.regex ? repl.find : escapeRe(repl.find);
+    if (repl.wholeWord) src = `\\b(?:${src})\\b`;
+    return new RegExp(src, 'gm' + (repl.caseSensitive ? '' : 'i'));
+  }
+  function expandRepl(m, tpl) {
+    if (!repl.regex) return tpl;
+    return tpl.replace(/\$(\d+|&|\$)|\\([nt\\])/g, (all, a, b) => {
+      if (a !== undefined) {
+        if (a === '$') return '$';
+        if (a === '&') return m[0];
+        const g = m[parseInt(a, 10)];
+        return g === undefined ? '' : g;
+      }
+      return b === 'n' ? '\n' : b === 't' ? '\t' : '\\';
+    });
+  }
+
   const edCmds = {
+    replaceSetup: async (ed) => {
+      const sel0 = ed.selection.isEmpty ? '' : ed.document.getText(ed.selection);
+      const find = await vscode.window.showInputBox({ prompt: 'Buscar', value: sel0 || repl.find });
+      if (!find) return;
+      const rep = await vscode.window.showInputBox({ prompt: 'Reemplazar por', value: repl.repl });
+      if (rep === undefined) return;
+      const items = [
+        { label: 'Expresión regular', k: 'regex', picked: repl.regex },
+        { label: 'Distinguir mayúsculas', k: 'caseSensitive', picked: repl.caseSensitive },
+        { label: 'Palabra completa', k: 'wholeWord', picked: repl.wholeWord },
+      ];
+      const chosen = await vscode.window.showQuickPick(items, { canPickMany: true, placeHolder: 'Opciones (Enter para aceptar)' });
+      if (!chosen) return;
+      const next = { find, repl: rep, regex: false, caseSensitive: false, wholeWord: false };
+      chosen.forEach((c) => { next[c.k] = true; });
+      const prev = repl;
+      repl = next;
+      try { buildRe(); } catch (e) {
+        repl = prev;
+        vscode.window.showErrorMessage(`Expresión regular inválida: ${e.message}`);
+        return;
+      }
+      context.globalState.update('borlandKit.replace', repl);
+      vscode.window.setStatusBarMessage('Reemplazo memorizado. Ctrl+L: reemplazar siguiente.', 4000);
+    },
+    replaceNext: async (ed) => {
+      if (!repl.find) { vscode.window.showWarningMessage('Primero definí el reemplazo (Ctrl+Q A).'); return; }
+      const doc = ed.document;
+      let re;
+      try { re = buildRe(); } catch (e) { vscode.window.showErrorMessage(e.message); return; }
+      const text = doc.getText();
+      re.lastIndex = doc.offsetAt(ed.selection.start);
+      let m = re.exec(text);
+      while (m && m[0].length === 0) {
+        re.lastIndex++;
+        m = re.lastIndex > text.length ? null : re.exec(text);
+      }
+      if (!m) { vscode.window.setStatusBarMessage('No hay más coincidencias', 3000); return; }
+      const out = expandRepl(m, repl.repl);
+      const s = m.index;
+      await ed.edit((eb) => eb.replace(rng(doc, s, s + m[0].length), out));
+      const pos = doc.positionAt(s + lenInDoc(doc, out));
+      ed.selection = new vscode.Selection(pos, pos);
+      ed.revealRange(new vscode.Range(pos, pos));
+    },
     blockBegin: (ed) => {
       const m = getMarks(ed.document);
       m.b = off(ed);
