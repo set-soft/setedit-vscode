@@ -24,6 +24,10 @@ Wrapping:
 - `borlandKit.excludeFromWrapping` commands excluded from wrapping
 - Added with: `Ctrl+Shift+P` then `Borland Kit: Instalar atajos grabables`
 
+Persistent blocks
+
+- `borlandKit.persistentSelection` to enable the persitent blocks, enabled by default
+
 Block Read/Write Dialog:
 
 - `borlandKit.dialogDirectory`:
