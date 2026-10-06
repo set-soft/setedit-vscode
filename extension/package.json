@@ -251,6 +251,10 @@
       {
           "command": "borlandKit.blockLowercase",
           "title": "Borland Kit: Bloque a minúsculas"
+      },
+      {
+          "command": "borlandKit.blockView",
+          "title": "Borland Kit: Mostrar bloque"
       }
     ],
     "keybindings": [

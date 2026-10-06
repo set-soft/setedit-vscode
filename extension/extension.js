@@ -66,6 +66,10 @@ function activate(context) {
   status.text = '$(record) REC';
   status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
 
+  const blockStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 90);
+  blockStatus.tooltip = 'Información del bloque persistente: clic para llevarlo a la vista';
+  blockStatus.command = 'borlandKit.blockView';
+
   const persistentSel = () => vscode.workspace.getConfiguration('borlandKit').get('persistentSelection', true);
   // Comandos que, si la selección es el bloque, la colapsan primero:
   // - borrado: no deben borrar el bloque;
@@ -271,6 +275,94 @@ function activate(context) {
     const m = blocks.get(key(doc));
     return m && m.b != null && m.e != null && m.b < m.e ? m : null;
   };
+  function refreshBlockStatus(ed) {
+    if (!ed) {
+      blockStatus.hide();
+      return;
+    }
+
+    const doc = ed.document;
+    const m = validBlock(doc);
+
+    if (!m) {
+      blockStatus.hide();
+      return;
+    }
+
+    const start = doc.positionAt(m.b);
+    const end = doc.positionAt(m.e);
+    const text = doc.getText(rng(doc, m.b, m.e));
+
+    // Si termina exactamente al comienzo de una línea,
+    // esa línea no forma parte del bloque.
+    const lines = end.character === 0
+      ? end.line - start.line
+      : end.line - start.line + 1;
+
+    const chars = text.length;
+
+    blockStatus.text = `$(selection) ${lines} líneas · ${chars} caracteres`;
+    blockStatus.show();
+  }
+  function blockView(ed) {
+    const m = needBlock(ed);
+    if (!m) return;
+
+    const doc = ed.document;
+    const start = doc.positionAt(m.b);
+
+    // m.e puede estar exactamente al comienzo de la línea siguiente.
+    // Para determinar la visibilidad del final usamos el último carácter
+    // que realmente pertenece al bloque.
+    // const end = doc.positionAt(Math.max(m.b, m.e - 1));
+    const endOffset = Math.max(m.b, m.e - 1);
+    const end = doc.positionAt(endOffset);
+
+    const isVisible = (line) =>
+      ed.visibleRanges.some(
+        (r) => line >= r.start.line && line <= r.end.line
+      );
+
+    const startVisible = isVisible(start.line);
+    const endVisible = isVisible(end.line);
+
+    if (!startVisible && !endVisible) {
+      // No se ve ninguna parte del bloque:
+      // llevar el principio a la parte superior.
+      ed.revealRange(
+        new vscode.Range(start, start),
+        vscode.TextEditorRevealType.AtTop
+      );
+      return;
+    }
+
+    if (startVisible && !endVisible) {
+      // Se ve el principio pero no el final:
+      // llevar el final a la parte inferior.
+      ed.revealRange(
+        new vscode.Range(end, end),
+        vscode.TextEditorRevealType.AtBottom
+      );
+      return;
+    }
+
+    if (!startVisible && endVisible) {
+      // Se ve el final pero no el principio:
+      // llevar el principio a la parte superior.
+      ed.revealRange(
+        new vscode.Range(start, start),
+        vscode.TextEditorRevealType.AtTop
+      );
+      return;
+    }
+
+    // Se ven principio y final:
+    // centrar el bloque completo.
+    ed.revealRange(
+      new vscode.Range(start, doc.positionAt(m.e)),
+      vscode.TextEditorRevealType.InCenter
+    );
+  }
   const opsOf = (doc) => {
     const k = key(doc);
     if (!opsMap.has(k)) opsMap.set(k, { undo: [], redo: [] });
@@ -287,10 +379,12 @@ function activate(context) {
     const m = validBlock(ed.document);
     ed.setDecorations(deco, m ? [rng(ed.document, m.b, m.e)] : []);
   }
+
   function refreshAll() {
     vscode.window.visibleTextEditors.forEach(refresh);
     const ed = vscode.window.activeTextEditor;
     vscode.commands.executeCommand('setContext', 'borlandKit.hasBlock', !!(ed && validBlock(ed.document)));
+    refreshBlockStatus(ed);
   }
 
   function adjustMark(m, changes, isEnd) {
@@ -851,6 +945,7 @@ function activate(context) {
       const m = needBlock(ed); if (!m) return;
       ed.selection = new vscode.Selection(ed.document.positionAt(m.b), ed.document.positionAt(m.e));
     },
+    blockView: (ed) => blockView(ed),
     // Ctrl+Q B / Ctrl+Q K: saltar al principio / al final del bloque.
     // El bloque sigue marcado; solo se mueve el cursor.
     blockGotoBegin: (ed) => {
@@ -1066,7 +1161,7 @@ function activate(context) {
       if (ed) return fn(ed);
     }));
   }
-  context.subscriptions.push(status, deco);
+  context.subscriptions.push(status, blockStatus, deco);
 }
 
 function deactivate() {}
