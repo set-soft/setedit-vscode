@@ -295,6 +295,28 @@
         "when": "textInputFocus"
     },
 
+    // --- Borrado parcial de líneas ---
+    // Borrar hasta el FINAL de la línea (Ctrl+Q, Y clásico de Borland / WordStar)
+    {
+        "key": "ctrl+q y",
+        "command": "deleteAllRight",
+        "when": "textInputFocus && !editorReadonly"
+    },
+
+    // Borrar hasta el PRINCIPIO de la línea
+    {
+        "key": "ctrl+q h",
+        "command": "deleteAllLeft",
+        "when": "textInputFocus && !editorReadonly"
+    },
+
+    // Saltar al delimitador complementario () {} []
+    {
+        "key": "ctrl+q escape",
+        "command": "editor.action.jumpToBracket",
+        "when": "editorTextFocus"
+    },
+
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
     {"key":"right","command":"borlandKit.exec","args":{"command":"cursorRight"},"when":"editorTextFocus"},
