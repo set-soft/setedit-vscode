@@ -67,7 +67,17 @@ function activate(context) {
   status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
 
   const persistentSel = () => vscode.workspace.getConfiguration('borlandKit').get('persistentSelection', true);
-  const COLLAPSE_CMDS = new Set(['deleteLeft', 'deleteRight', 'deleteWordLeft', 'deleteWordRight']);
+  // Comandos que, si la selección es el bloque, la colapsan primero:
+  // - borrado: no deben borrar el bloque;
+  // - movimiento sin Shift: deben partir de la posición del cursor y no del
+  //   borde de la selección (comportamiento nativo de VSCodium).
+  const COLLAPSE_CMDS = new Set([
+    'deleteLeft', 'deleteRight', 'deleteWordLeft', 'deleteWordRight',
+    'cursorLeft', 'cursorRight', 'cursorUp', 'cursorDown',
+    'cursorHome', 'cursorEnd', 'cursorPageUp', 'cursorPageDown',
+    'cursorWordLeft', 'cursorWordRight',
+    'cursorWordStartLeft', 'cursorWordStartRight', 'cursorWordEndLeft', 'cursorWordEndRight',
+  ]);
 
   // Si la selección actual ES el bloque, se colapsa antes de escribir/borrar:
   // así el bloque no se reemplaza ni se borra por tipear.
