@@ -15,20 +15,20 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Arbitrary indent
 - Move to window top/bottom
 
-Dependency:
+## Dependency:
 
 - `Numbered Bookmarks` by Alessandro Fragnani
 
-Wrapping:
+## Wrapping:
 
 - `borlandKit.excludeFromWrapping` commands excluded from wrapping
 - Added with: `Ctrl+Shift+P` then `Borland Kit: Instalar atajos grabables`
 
-Persistent blocks
+## Persistent blocks
 
 - `borlandKit.persistentSelection` to enable the persitent blocks, enabled by default
 
-Block Read/Write Dialog:
+## Block Read/Write Dialog:
 
 - `borlandKit.dialogDirectory`:
   - `document`: directory for the file under edition
