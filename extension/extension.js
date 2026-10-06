@@ -947,6 +947,43 @@ function activate(context) {
       const p = off(ed);
       await blockOp(ed, (eb) => eb.insert(doc.positionAt(p), text), () => ({ b: p, e: p + text.length }));
     },
+    // Convertir el contenido del bloque persistente a mayúsculas/minúsculas.
+    blockUppercase: async (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      const doc = ed.document;
+      const r = rng(doc, m.b, m.e);
+      const text = doc.getText(r);
+      const converted = text.toUpperCase();
+
+      // Evitar generar una operación de undo si no cambia nada.
+      if (converted === text) return;
+
+      const len = converted.length;
+
+      await blockOp(
+        ed,
+        (eb) => eb.replace(r, converted),
+        () => ({ b: m.b, e: m.b + len })
+      );
+    },
+    blockLowercase: async (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      const doc = ed.document;
+      const r = rng(doc, m.b, m.e);
+      const text = doc.getText(r);
+      const converted = text.toLowerCase();
+
+      // Evitar generar una operación de undo si no cambia nada.
+      if (converted === text) return;
+
+      const len = converted.length;
+
+      await blockOp(
+        ed,
+        (eb) => eb.replace(r, converted),
+        () => ({ b: m.b, e: m.b + len })
+      );
+    },
     blockMove: async (ed) => {
       const m = needBlock(ed); if (!m) return;
       const doc = ed.document;

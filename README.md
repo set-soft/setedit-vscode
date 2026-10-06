@@ -16,6 +16,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Move to window top/bottom
 - Move to selection start/end
 - Select word/line
+- Block to upper/lowercase
 
 ## Dependency:
 

@@ -243,6 +243,14 @@
         "command": "borlandKit.blockPrefix",
         "title": "Anteponer texto a cada línea del bloque",
         "category": "Borland Kit"
+      },
+      {
+          "command": "borlandKit.blockUppercase",
+          "title": "Borland Kit: Bloque a MAYÚSCULAS"
+      },
+      {
+          "command": "borlandKit.blockLowercase",
+          "title": "Borland Kit: Bloque a minúsculas"
       }
     ],
     "keybindings": [
@@ -440,6 +448,16 @@
       {
         "key": "ctrl+k p",
         "command": "borlandKit.blockPrefix",
+        "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "ctrl+k m",
+        "command": "borlandKit.blockUppercase",
+        "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "ctrl+k o",
+        "command": "borlandKit.blockLowercase",
         "when": "editorTextFocus && borlandKit.hasBlock"
       }
     ],
