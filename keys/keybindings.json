@@ -283,7 +283,7 @@
 
     // Ctrl + Q D: Fin de línea
     {
-        "key": "ctrl+q B",
+        "key": "ctrl+q d",
         "command": "cursorEnd",
         "when": "textInputFocus"
     },
@@ -316,6 +316,7 @@
         "command": "editor.action.jumpToBracket",
         "when": "editorTextFocus"
     },
+
 
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
@@ -360,8 +361,15 @@
     {"key":"ctrl+c","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCopy"},"when":"editorTextFocus && !editorHasSelection && borlandKit.hasBlock"},
     {"key":"ctrl+x","command":"borlandKit.exec","args":{"command":"borlandKit.blockClipCut"},"when":"editorTextFocus && !editorHasSelection && borlandKit.hasBlock"},
     {"key":"ctrl+shift+insert","command":"borlandKit.exec","args":{"command":"borlandKit.blockReplacePaste"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"shift+insert","command":"borlandKit.exec","args":{"command":"borlandKit.blockPaste"},"when":"editorTextFocus && !editorReadonly"},
+    {"key":"ctrl+q b","command":"borlandKit.exec","args":{"command":"borlandKit.blockGotoBegin"},"when":"editorTextFocus"},
+    {"key":"ctrl+q k","command":"borlandKit.exec","args":{"command":"borlandKit.blockGotoEnd"},"when":"editorTextFocus"},
+    {"key":"ctrl+k l","command":"borlandKit.exec","args":{"command":"borlandKit.blockMarkLine"},"when":"editorTextFocus"},
+    {"key":"ctrl+k t","command":"borlandKit.exec","args":{"command":"borlandKit.blockMarkWord"},"when":"editorTextFocus"},
     {"key":"ctrl+home","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewTop"},"when":"editorTextFocus"},
+    {"key":"ctrl+q e","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewTop"},"when":"editorTextFocus"},
     {"key":"ctrl+end","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewBottom"},"when":"editorTextFocus"},
+    {"key":"ctrl+q x","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewBottom"},"when":"editorTextFocus"},
     {"key":"ctrl+shift+home","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewTopSelect"},"when":"editorTextFocus"},
     {"key":"ctrl+shift+end","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewBottomSelect"},"when":"editorTextFocus"},
     {"key":"ctrl+k i","command":"borlandKit.exec","args":{"command":"borlandKit.blockIndent"},"when":"editorTextFocus"},
@@ -404,6 +412,14 @@
     {"key":"f6","command":"borlandKit.exec","args":{"command":"workbench.action.nextEditor"}},
     {"key":"shift+f6","command":"borlandKit.exec","args":{"command":"workbench.action.previousEditor"}},
     {"key":"ctrl+q f","command":"borlandKit.exec","args":{"command":"actions.find"}},
-    {"key":"ctrl+q a","command":"borlandKit.exec","args":{"command":"editor.action.startFindReplaceAction"}}
+    {"key":"ctrl+q a","command":"borlandKit.exec","args":{"command":"editor.action.startFindReplaceAction"}},
+    {"key":"ctrl+f12","command":"borlandKit.exec","args":{"command":"workbench.action.reloadWindow"}},
+    {"key":"ctrl+q c","command":"borlandKit.exec","args":{"command":"cursorBottom"},"when":"textInputFocus"},
+    {"key":"ctrl+q r","command":"borlandKit.exec","args":{"command":"cursorTop"},"when":"textInputFocus"},
+    {"key":"ctrl+q d","command":"borlandKit.exec","args":{"command":"cursorEnd"},"when":"textInputFocus"},
+    {"key":"ctrl+q S","command":"borlandKit.exec","args":{"command":"cursorHome"},"when":"textInputFocus"},
+    {"key":"ctrl+q y","command":"borlandKit.exec","args":{"command":"deleteAllRight"},"when":"textInputFocus && !editorReadonly"},
+    {"key":"ctrl+q h","command":"borlandKit.exec","args":{"command":"deleteAllLeft"},"when":"textInputFocus && !editorReadonly"},
+    {"key":"ctrl+q escape","command":"borlandKit.exec","args":{"command":"editor.action.jumpToBracket"},"when":"editorTextFocus"}
     // <<< borland-kit <<<
 ]

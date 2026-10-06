@@ -812,6 +812,43 @@ function activate(context) {
       const m = needBlock(ed); if (!m) return;
       ed.selection = new vscode.Selection(ed.document.positionAt(m.b), ed.document.positionAt(m.e));
     },
+    // Ctrl+Q B / Ctrl+Q K: saltar al principio / al final del bloque.
+    // El bloque sigue marcado; solo se mueve el cursor.
+    blockGotoBegin: (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      const pos = ed.document.positionAt(m.b);
+      ed.selection = new vscode.Selection(pos, pos);
+      ed.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+    },
+    blockGotoEnd: (ed) => {
+      const m = needBlock(ed); if (!m) return;
+      const pos = ed.document.positionAt(m.e);
+      ed.selection = new vscode.Selection(pos, pos);
+      ed.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+    },
+    // Ctrl+K L / Ctrl+K T: marcar la línea / la palabra del cursor como bloque.
+    // Se marca el bloque persistente (como Ctrl+K B / K K) y el cursor no se
+    // mueve. La línea incluye su salto de línea, como la selección de línea nativa.
+    blockMarkLine: (ed) => {
+      const doc = ed.document;
+      const ln = ed.selection.active.line;
+      const b = doc.offsetAt(new vscode.Position(ln, 0));
+      const e = ln < doc.lineCount - 1
+        ? doc.offsetAt(new vscode.Position(ln + 1, 0))
+        : doc.offsetAt(doc.lineAt(ln).range.end);
+      if (e <= b) { vscode.window.showInformationMessage('La línea está vacía.'); return; }
+      const a = ed.selection.active;
+      ed.selection = new vscode.Selection(a, a);
+      setBlock(ed, b, e);
+    },
+    blockMarkWord: (ed) => {
+      const doc = ed.document;
+      const r = doc.getWordRangeAtPosition(ed.selection.active);
+      if (!r) { vscode.window.showInformationMessage('No hay palabra bajo el cursor.'); return; }
+      const a = ed.selection.active;
+      ed.selection = new vscode.Selection(a, a);
+      setBlock(ed, doc.offsetAt(r.start), doc.offsetAt(r.end));
+    },
     blockClipCopy: async (ed) => {
       const m = needBlock(ed); if (!m) return;
       await vscode.env.clipboard.writeText(ed.document.getText(rng(ed.document, m.b, m.e)));

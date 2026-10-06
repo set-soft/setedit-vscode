@@ -14,6 +14,8 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Block un/comment
 - Arbitrary indent
 - Move to window top/bottom
+- Move to selection start/end
+- Select word/line
 
 ## Dependency:
 

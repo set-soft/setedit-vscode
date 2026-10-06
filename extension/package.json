@@ -185,6 +185,26 @@
         "category": "Borland Kit"
       },
       {
+        "command": "borlandKit.blockGotoBegin",
+        "title": "Ir al principio del bloque",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockGotoEnd",
+        "title": "Ir al final del bloque",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockMarkLine",
+        "title": "Marcar línea como bloque",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockMarkWord",
+        "title": "Marcar palabra como bloque",
+        "category": "Borland Kit"
+      },
+      {
         "command": "borlandKit.openFileUnderCursor",
         "title": "Abrir archivo o URL bajo el cursor",
         "category": "Borland Kit"
@@ -331,6 +351,26 @@
         "key": "shift+insert",
         "command": "borlandKit.blockPaste",
         "when": "editorTextFocus && !editorReadonly"
+      },
+      {
+        "key": "ctrl+q b",
+        "command": "borlandKit.blockGotoBegin",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+q k",
+        "command": "borlandKit.blockGotoEnd",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k l",
+        "command": "borlandKit.blockMarkLine",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k t",
+        "command": "borlandKit.blockMarkWord",
+        "when": "editorTextFocus"
       },
       {
         "key": "ctrl+enter",
