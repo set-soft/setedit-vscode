@@ -180,6 +180,11 @@
         "category": "Borland Kit"
       },
       {
+        "command": "borlandKit.blockPaste",
+        "title": "Pegar y marcar como bloque",
+        "category": "Borland Kit"
+      },
+      {
         "command": "borlandKit.openFileUnderCursor",
         "title": "Abrir archivo o URL bajo el cursor",
         "category": "Borland Kit"
@@ -321,6 +326,11 @@
         "key": "ctrl+shift+insert",
         "command": "borlandKit.blockReplacePaste",
         "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "shift+insert",
+        "command": "borlandKit.blockPaste",
+        "when": "editorTextFocus && !editorReadonly"
       },
       {
         "key": "ctrl+enter",

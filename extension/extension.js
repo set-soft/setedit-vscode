@@ -823,6 +823,34 @@ function activate(context) {
       await vscode.env.clipboard.writeText(doc.getText(r));
       await blockOp(ed, (eb) => eb.delete(r), () => ({ b: null, e: null }));
     },
+    // Shift+Insert: pega el portapapeles en el cursor y deja lo pegado marcado
+    // como bloque. Si hay un bloque seleccionado NO lo reemplaza (para eso está
+    // Ctrl+Shift+Insert); una selección que no es el bloque sí se reemplaza,
+    // como en el pegado nativo.
+    blockPaste: async (ed) => {
+      if (ed.selections.length > 1) {
+        await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+        return;
+      }
+      const doc = ed.document;
+      const text = await vscode.env.clipboard.readText();
+      if (!text) return;
+      const sel = ed.selection;
+      const m = validBlock(doc);
+      const selIsBlock = !!m && !sel.isEmpty
+        && doc.offsetAt(sel.start) === m.b && doc.offsetAt(sel.end) === m.e;
+      const replaceSel = !sel.isEmpty && !(persistentSel() && selIsBlock);
+      const start = replaceSel ? doc.offsetAt(sel.start) : off(ed);
+      const end = replaceSel ? doc.offsetAt(sel.end) : start;
+      const len = lenInDoc(doc, text);
+      await blockOp(ed,
+        (eb) => (replaceSel
+          ? eb.replace(rng(doc, start, end), text)
+          : eb.insert(doc.positionAt(start), text)),
+        () => ({ b: start, e: start + len }));
+      const pos = doc.positionAt(start + len);
+      ed.selection = new vscode.Selection(pos, pos);
+    },
     // Ctrl+Shift+Insert: reemplaza el bloque por el contenido del portapapeles
     // (borrar bloque + pegar, en una sola operación deshacible).
     blockReplacePaste: async (ed) => {
