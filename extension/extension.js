@@ -554,7 +554,22 @@ function activate(context) {
     }
   }
 
-  async function shiftLines(ed, dir) {
+  function indentUnit(ed) {
+    const tabSize = Number(ed.options.tabSize) || 4;
+    return ed.options.insertSpaces === false ? '\t' : ' '.repeat(tabSize);
+  }
+
+  function outdentText(line, unit) {
+    const leading = /^[ \t]*/.exec(line.text)[0];
+    if (!leading.length) return '';
+    if (unit === '\t') {
+      return leading[0] === '\t' ? '\t' : leading.slice(0, 1);
+    }
+    if (leading[0] === '\t') return '\t';
+    return leading.slice(0, Math.min(unit.length, leading.length));
+  }
+
+  async function shiftLines(ed, dir, byLevel = false) {
     const doc = ed.document;
     const m = validBlock(doc);
     let b, e;
@@ -565,27 +580,48 @@ function activate(context) {
     const first = sp.line;
     let last = ep.line;
     if (e > b && ep.character === 0 && last > first) last--; // un bloque que termina en columna 0 no incluye esa línea
+    const unit = byLevel ? indentUnit(ed) : ' ';
     const starts = [];
     for (let l = first; l <= last; l++) {
       const line = doc.lineAt(l);
-      if (dir > 0) { if (line.text.length > 0) starts.push(line); }
-      else if (line.text.startsWith(' ')) starts.push(line);
+      if (dir > 0) {
+        if (line.text.length > 0) starts.push({ line, text: unit });
+      } else {
+        const text = byLevel ? outdentText(line, unit)
+          : (line.text.startsWith(' ') ? ' ' : '');
+        if (text.length > 0) starts.push({ line, text });
+      }
     }
     if (!starts.length) return;
     const selEqual = !ed.selection.isEmpty
       && doc.offsetAt(ed.selection.start) === b && doc.offsetAt(ed.selection.end) === e;
     const fsOff = doc.offsetAt(doc.lineAt(first).range.start);
-    const firstChanged = starts[0].lineNumber === first;
-    const b2 = b + (firstChanged && b > fsOff ? dir : 0);
-    const e2 = e + dir * starts.length;
+    const firstChanged = starts.some((x) => x.line.lineNumber === first);
+
+    const totalDelta = starts.reduce(
+      (n, x) => n + (dir > 0 ? x.text.length : -x.text.length), 0
+    );
+
+    let b2 = b;
+    if (firstChanged && b > fsOff) {
+      const firstItem = starts.find((x) => x.line.lineNumber === first);
+      const delta = dir > 0 ? firstItem.text.length : -firstItem.text.length;
+      b2 = Math.max(fsOff, b + delta);
+    }
+
+    const e2 = Math.max(b2, e + totalDelta);
+
     const editFn = (eb) => {
-      for (const ln of starts) {
-        const pos = ln.range.start;
-        if (dir > 0) eb.insert(pos, ' ');
-        else eb.delete(new vscode.Range(pos, pos.translate(0, 1)));
-      }
+       for (const item of starts) {
+        const pos = item.line.range.start;
+        if (dir > 0) {
+          eb.insert(pos, item.text);
+        } else {
+          eb.delete(new vscode.Range(pos, pos.translate(0, item.text.length)));
+        }
+       }
     };
-    if (m) await blockOp(ed, editFn, () => ({ b: b2, e: Math.max(e2, b2) }));
+    if (m) await blockOp(ed, editFn, () => ({ b: b2, e: e2 }));
     else await ed.edit(editFn);
     if (selEqual) ed.selection = new vscode.Selection(doc.positionAt(b2), doc.positionAt(e2));
   }
@@ -705,7 +741,7 @@ function activate(context) {
     }
   }
 
-  // Ctrl+Home / Ctrl+End: primera / última línea visible en pantalla
+  // Ctrl+Home / Ctrl+End: primera  / última línea visible en pantalla
   // (se conserva la columna, ajustada al largo de la línea destino).
   // Con select=true (Ctrl+Shift+...) se extiende la selección desde el ancla.
   function moveToViewLine(ed, top, select = false) {
@@ -789,6 +825,9 @@ function activate(context) {
     // bloque (o de la selección, o la línea actual si no hay ninguno).
     blockIndent: (ed) => shiftLines(ed, +1),
     blockOutdent: (ed) => shiftLines(ed, -1),
+    // Indentar / desindentar un nivel según la configuración del editor.
+    blockIndentLevel: (ed) => shiftLines(ed, +1, true),
+    blockOutdentLevel: (ed) => shiftLines(ed, -1, true),
     // Anteponer texto arbitrario al comienzo de cada línea del bloque.
     blockPrefix: (ed) => prefixBlockLines(ed),
     // Comentar / descomentar las líneas del bloque (usa los comandos nativos

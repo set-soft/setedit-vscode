@@ -10,7 +10,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Jump to line
 - Replace block
 - Open file under cursor
-- Block un/indent by a space
+- Block un/indent by a space and by a level
 - Block un/comment
 - Arbitrary indent
 - Move to window top/bottom

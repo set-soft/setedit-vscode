@@ -220,6 +220,16 @@
         "category": "Borland Kit"
       },
       {
+        "command": "borlandKit.blockIndentLevel",
+        "title": "Indentar bloque (un nivel)",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.blockOutdentLevel",
+        "title": "Desindentar bloque (un nivel)",
+        "category": "Borland Kit"
+      },
+      {
         "command": "borlandKit.blockComment",
         "title": "Comentar bloque",
         "category": "Borland Kit"
@@ -418,6 +428,16 @@
         "when": "editorTextFocus"
       },
       {
+        "key": "ctrl+k tab",
+        "command": "borlandKit.blockIndentLevel",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+k shift+tab",
+        "command": "borlandKit.blockOutdentLevel",
+        "when": "editorTextFocus"
+      },
+      {
         "key": "ctrl+k p",
         "command": "borlandKit.blockPrefix",
         "when": "editorTextFocus && borlandKit.hasBlock"
@@ -468,8 +488,16 @@
           "group": "1@2"
         },
         {
-          "command": "borlandKit.blockPrefix",
+          "command": "borlandKit.blockIndentLevel",
           "group": "1@3"
+        },
+        {
+          "command": "borlandKit.blockOutdentLevel",
+          "group": "1@4"
+        },
+        {
+          "command": "borlandKit.blockPrefix",
+          "group": "1@5git"
         }
       ],
       "borlandKit.commentMenu": [
