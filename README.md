@@ -13,6 +13,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Block un/indent by a space
 - Block un/comment
 - Arbitrary indent
+- Move to window top/bottom
 
 Dependency:
 

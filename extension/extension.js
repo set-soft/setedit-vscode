@@ -168,8 +168,6 @@ function activate(context) {
       ['shift+up', 'cursorUpSelect', vert], ['shift+down', 'cursorDownSelect', vert],
       ['home', 'cursorHome', any], ['end', 'cursorEnd', any],
       ['shift+home', 'cursorHomeSelect', any], ['shift+end', 'cursorEndSelect', any],
-      ['ctrl+home', 'cursorTop', any], ['ctrl+end', 'cursorBottom', any],
-      ['ctrl+shift+home', 'cursorTopSelect', any], ['ctrl+shift+end', 'cursorBottomSelect', any],
       ['pageup', 'cursorPageUp', vert], ['pagedown', 'cursorPageDown', vert],
       ['shift+pageup', 'cursorPageUpSelect', vert], ['shift+pagedown', 'cursorPageDownSelect', vert],
       ['ctrl+left', 'cursorWordLeft', any], ['ctrl+right', 'cursorWordRight', any],
@@ -215,7 +213,7 @@ function activate(context) {
 
     const exclude = vscode.workspace.getConfiguration('borlandKit').get('excludeFromWrapping', []);
     const blockKeys = (context.extension.packageJSON.contributes.keybindings || [])
-      .filter((b) => b.command.startsWith('borlandKit.block') || b.command === 'borlandKit.replaceNext')
+      .filter((b) => b.command.startsWith('borlandKit.block') || b.command.startsWith('borlandKit.cursorView') || b.command === 'borlandKit.replaceNext')
       .map((b) => wrap(b.key, b.command, undefined, b.when));
     const userWrapped = (Array.isArray(user) ? user : [])
       .filter((e) => e && typeof e.key === 'string' && typeof e.command === 'string'
@@ -697,6 +695,29 @@ function activate(context) {
     }
   }
 
+  // Ctrl+Home / Ctrl+End: primera / última línea visible en pantalla
+  // (se conserva la columna, ajustada al largo de la línea destino).
+  // Con select=true (Ctrl+Shift+...) se extiende la selección desde el ancla.
+  function moveToViewLine(ed, top, select = false) {
+    const vr = ed.visibleRanges;
+    if (!vr.length) return;
+    const doc = ed.document;
+    let line = top ? vr[0].start.line : vr[vr.length - 1].end.line;
+    line = Math.max(0, Math.min(line, doc.lineCount - 1));
+    const col = Math.min(ed.selection.active.character, doc.lineAt(line).text.length);
+    const pos = new vscode.Position(line, col);
+    const sel = new vscode.Selection(select ? ed.selection.anchor : pos, pos);
+    ed.selection = sel;
+    // El aviso de cambio de selección llega cuando ya terminó el comando, así
+    // que el bloque persistente se actualiza directamente acá.
+    if (select && !sel.isEmpty && persistentSel()) {
+      const m = getMarks(doc);
+      m.b = doc.offsetAt(sel.start);
+      m.e = doc.offsetAt(sel.end);
+      refreshAll();
+    }
+  }
+
   function wordAtCursor(ed) {
     const doc = ed.document;
     if (!ed.selection.isEmpty && ed.selection.isSingleLine) return doc.getText(ed.selection);
@@ -750,6 +771,10 @@ function activate(context) {
     symbolsInFile: (ed) => quickOpenWithWord(ed, '@'),
     symbolsInWorkspace: (ed) => quickOpenWithWord(ed, '#'),
     openFileUnderCursor: (ed) => openFileUnderCursor(ed),
+    cursorViewTop: (ed) => moveToViewLine(ed, true),
+    cursorViewBottom: (ed) => moveToViewLine(ed, false),
+    cursorViewTopSelect: (ed) => moveToViewLine(ed, true, true),
+    cursorViewBottomSelect: (ed) => moveToViewLine(ed, false, true),
     // Ctrl+K I / Ctrl+K U: indentar / desindentar un espacio las líneas del
     // bloque (o de la selección, o la línea actual si no hay ninguno).
     blockIndent: (ed) => shiftLines(ed, +1),

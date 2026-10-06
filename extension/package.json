@@ -2,7 +2,7 @@
   "name": "borland-kit",
   "displayName": "Borland Kit",
   "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.7.0",
+  "version": "0.9.0",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"
@@ -152,6 +152,26 @@
       {
         "command": "borlandKit.symbolsInWorkspace",
         "title": "Símbolos del proyecto (palabra bajo el cursor)",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.cursorViewTop",
+        "title": "Ir a la primera línea visible",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.cursorViewBottom",
+        "title": "Ir a la última línea visible",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.cursorViewTopSelect",
+        "title": "Seleccionar hasta la primera línea visible",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.cursorViewBottomSelect",
+        "title": "Seleccionar hasta la última línea visible",
         "category": "Borland Kit"
       },
       {
@@ -306,6 +326,26 @@
         "key": "ctrl+enter",
         "command": "borlandKit.openFileUnderCursor",
         "when": "editorTextFocus && !suggestWidgetVisible"
+      },
+      {
+        "key": "ctrl+home",
+        "command": "borlandKit.cursorViewTop",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+end",
+        "command": "borlandKit.cursorViewBottom",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+shift+home",
+        "command": "borlandKit.cursorViewTopSelect",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+shift+end",
+        "command": "borlandKit.cursorViewBottomSelect",
+        "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k i",
