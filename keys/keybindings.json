@@ -259,7 +259,12 @@
         "key": "escape",
         "command": "borlandKit.blockHide",
         "when": "editorTextFocus"
-    },     
+    },
+    // Ctrl + F12: Recargar Codium / Extensiones al instante
+    {
+        "key": "ctrl+f12",
+        "command": "workbench.action.reloadWindow"
+    },
 
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
