@@ -266,6 +266,35 @@
         "command": "workbench.action.reloadWindow"
     },
 
+    // Comandos Wordstar poco frecuentes
+    // Ctrl + Q C: Ir al final del documento (cursorBottom)
+    {
+        "key": "ctrl+q c",
+        "command": "cursorBottom",
+        "when": "textInputFocus"
+    },
+
+    // Ctrl + Q R: Ir al inicio del documento (cursorTop)
+    {
+        "key": "ctrl+q r",
+        "command": "cursorTop",
+        "when": "textInputFocus"
+    },
+
+    // Ctrl + Q D: Fin de línea
+    {
+        "key": "ctrl+q B",
+        "command": "cursorEnd",
+        "when": "textInputFocus"
+    },
+
+    // Ctrl + Q S: Inicio de línea
+    {
+        "key": "ctrl+q S",
+        "command": "cursorHome",
+        "when": "textInputFocus"
+    },
+
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
     {"key":"right","command":"borlandKit.exec","args":{"command":"cursorRight"},"when":"editorTextFocus"},

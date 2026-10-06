@@ -343,7 +343,17 @@
         "when": "editorTextFocus"
       },
       {
+        "key": "ctrl+q e",
+        "command": "borlandKit.cursorViewTop",
+        "when": "editorTextFocus"
+      },
+      {
         "key": "ctrl+end",
+        "command": "borlandKit.cursorViewBottom",
+        "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+q x",
         "command": "borlandKit.cursorViewBottom",
         "when": "editorTextFocus"
       },
