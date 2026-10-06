@@ -318,6 +318,7 @@
     },
 
 
+
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
     {"key":"right","command":"borlandKit.exec","args":{"command":"cursorRight"},"when":"editorTextFocus"},
@@ -374,7 +375,11 @@
     {"key":"ctrl+shift+end","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewBottomSelect"},"when":"editorTextFocus"},
     {"key":"ctrl+k i","command":"borlandKit.exec","args":{"command":"borlandKit.blockIndent"},"when":"editorTextFocus"},
     {"key":"ctrl+k u","command":"borlandKit.exec","args":{"command":"borlandKit.blockOutdent"},"when":"editorTextFocus"},
+    {"key":"ctrl+k tab","command":"borlandKit.exec","args":{"command":"borlandKit.blockIndentLevel"},"when":"editorTextFocus"},
+    {"key":"ctrl+k shift+tab","command":"borlandKit.exec","args":{"command":"borlandKit.blockOutdentLevel"},"when":"editorTextFocus"},
     {"key":"ctrl+k p","command":"borlandKit.exec","args":{"command":"borlandKit.blockPrefix"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"ctrl+k m","command":"borlandKit.exec","args":{"command":"borlandKit.blockUppercase"},"when":"editorTextFocus && borlandKit.hasBlock"},
+    {"key":"ctrl+k o","command":"borlandKit.exec","args":{"command":"borlandKit.blockLowercase"},"when":"editorTextFocus && borlandKit.hasBlock"},
     {"key":"f2","command":"borlandKit.exec","args":{"command":"workbench.action.files.save"}},
     {"key":"f3","command":"borlandKit.exec","args":{"command":"workbench.action.files.openFile"}},
     {"key":"alt+0","command":"borlandKit.exec","args":{"command":"workbench.action.quickOpen"}},
