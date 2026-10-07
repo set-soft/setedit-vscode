@@ -486,6 +486,10 @@
         "key": "ctrl+k o",
         "command": "borlandKit.blockLowercase",
         "when": "editorTextFocus && borlandKit.hasBlock"
+      },
+      {
+        "key": "alt+x",
+        "command": "borlandKit.quitWithConfirmation"
       }
     ],
     "configurationDefaults": {

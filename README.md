@@ -20,6 +20,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 - Selection status (characters, lines and jump to)
 - Delete right spaces/word
 - Show tabs, force to purge extra spaces (`showTabs` option and `tabOutline` color)
+- Exit session with save confirmation (Alt+X, if you use the menu or close button you get the native behavior)
 
 ## Dependency:
 

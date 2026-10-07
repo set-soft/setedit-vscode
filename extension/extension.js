@@ -1233,6 +1233,62 @@ function activate(context) {
       if (e.affectsConfiguration('borlandKit.showTabs')) updateAllTabs();
     })
   );
+
+  async function quitWithConfirmation() {
+    const dirty = vscode.workspace.textDocuments.filter((doc) => doc.isDirty);
+
+    for (const doc of dirty) {
+      const name = doc.isUntitled
+        ? 'Archivo sin guardar'
+        : vscode.workspace.asRelativePath(doc.uri);
+
+      const answer = await vscode.window.showWarningMessage(
+        `El archivo "${name}" tiene cambios sin guardar.`,
+        { modal: true },
+        'Guardar',
+        'No guardar'
+      );
+
+      if (answer === undefined) {
+        return;
+      }
+
+      if (answer === 'Guardar') {
+        const ok = await doc.save();
+        if (!ok || doc.isDirty) {
+          return;
+        }
+      } else if (answer === 'No guardar') {
+        // workbench.action.files.revert actúa sobre el editor activo.
+        const ed = vscode.window.visibleTextEditors.find(
+          (e) => e.document === doc
+        );
+
+        if (ed) {
+          await vscode.window.showTextDocument(ed.document, ed.viewColumn, false);
+        } else {
+          await vscode.window.showTextDocument(doc, {
+            preserveFocus: true,
+            preview: false,
+          });
+        }
+
+        await vscode.commands.executeCommand('workbench.action.files.revert');
+
+        if (doc.isDirty) {
+          return;
+        }
+      }
+    }
+
+    // Verificación final: no salir si quedó algún documento modificado.
+    if (vscode.workspace.textDocuments.some((doc) => doc.isDirty)) {
+      return;
+    }
+
+    await vscode.commands.executeCommand('workbench.action.quit');
+  }
+
   updateAllTabs();
 
   const plain = {
