@@ -50,6 +50,11 @@
           "type": "string",
           "default": "",
           "description": "Comando para abrir URLs y archivos img:/pdf: (ej: \"firefox\" o \"firefox --new-tab\"). Vacío = navegador/visor por defecto del sistema."
+        },
+        "borlandKit.showTabs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Marca con un recuadro los caracteres de tabulación del texto."
         }
       }
     },
@@ -476,8 +481,24 @@
       }
     ],
     "configurationDefaults": {
-      "editor.find.seedSearchStringFromSelection": "never"
+      "editor.find.seedSearchStringFromSelection": "never",
+      "editor.renderWhitespace": "trailing",
+      "files.trimTrailingWhitespace": true,
+      "files.insertFinalNewline": true,
+      "files.trimFinalNewlines": true
     },
+    "colors": [
+      {
+        "id": "borlandKit.tabOutline",
+        "description": "Color del recuadro con que marca los tabuladores.",
+        "defaults": {
+          "dark": "#b93434aa",
+          "light": "#a72a2aaa",
+          "highContrast": "#ff0000",
+          "highContrastLight": "#000000"
+        }
+      }
+    ],
     "submenus": [
       {
         "id": "borlandKit.tools",

@@ -1178,6 +1178,53 @@ function activate(context) {
     },
   };
 
+  // ============================================ VISIBILIDAD DE TABULADORES
+  // Los espacios del final de línea los muestra el editor (renderWhitespace:
+  // "trailing"). Los tabuladores se marcan acá con un recuadro punteado, sin
+  // tocar el resto de los espacios.
+  const tabDeco = vscode.window.createTextEditorDecorationType({
+    borderStyle: 'solid',
+    borderWidth: '3px',
+    borderColor: new vscode.ThemeColor('borlandKit.tabOutline'),
+  });
+
+  function updateTabs(ed) {
+    if (!ed) return;
+    if (!vscode.workspace.getConfiguration('borlandKit').get('showTabs', true)) {
+      ed.setDecorations(tabDeco, []);
+      return;
+    }
+    const doc = ed.document;
+    const ranges = [];
+    for (const vr of ed.visibleRanges) {
+      const from = Math.max(0, vr.start.line - 5);
+      const to = Math.min(doc.lineCount - 1, vr.end.line + 5);
+      for (let l = from; l <= to; l++) {
+        const t = doc.lineAt(l).text;
+        let i = t.indexOf('\t');
+        while (i >= 0) {
+          ranges.push(new vscode.Range(l, i, l, i + 1));
+          i = t.indexOf('\t', i + 1);
+        }
+      }
+    }
+    ed.setDecorations(tabDeco, ranges);
+  }
+  const updateAllTabs = () => vscode.window.visibleTextEditors.forEach(updateTabs);
+
+  context.subscriptions.push(
+    tabDeco,
+    vscode.window.onDidChangeTextEditorVisibleRanges((e) => updateTabs(e.textEditor)),
+    vscode.window.onDidChangeVisibleTextEditors(updateAllTabs),
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      vscode.window.visibleTextEditors.filter((ed) => ed.document === e.document).forEach(updateTabs);
+    }),
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('borlandKit.showTabs')) updateAllTabs();
+    })
+  );
+  updateAllTabs();
+
   const plain = {
     macroStart, macroStop, exec, installKeybindings,
     macroPlay: () => macroPlay(1),
