@@ -40,3 +40,14 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
   - `document`: directory for the file under edition
   - `workspace`: project root
   - `last`: last one used in the dialog
+
+## Example of more visible trailing spaces
+
+Add to `settings.json`:
+
+```
+"workbench.colorCustomizations": {
+        // Cambia el color de los puntos de espacio y flechas de tabulación
+        "editorWhitespace.foreground": "#fa1313"
+    }
+```
