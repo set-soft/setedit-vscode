@@ -1,0 +1,6 @@
+{
+ "workbench.colorCustomizations": {
+        // Cambia el color de los puntos de espacio y flechas de tabulación
+        "editorWhitespace.foreground": "#fa1313"
+    }
+}
