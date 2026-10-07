@@ -255,16 +255,24 @@
         "category": "Borland Kit"
       },
       {
-          "command": "borlandKit.blockUppercase",
-          "title": "Borland Kit: Bloque a MAYÚSCULAS"
+        "command": "borlandKit.blockUppercase",
+        "title": "Bloque a MAYÚSCULAS",
+        "category": "Borland Kit"
       },
       {
-          "command": "borlandKit.blockLowercase",
-          "title": "Borland Kit: Bloque a minúsculas"
+        "command": "borlandKit.blockLowercase",
+        "title": "Bloque a minúsculas",
+        "category": "Borland Kit"
       },
       {
-          "command": "borlandKit.blockView",
-          "title": "Borland Kit: Mostrar bloque"
+        "command": "borlandKit.blockView",
+        "title": "Mostrar bloque",
+        "category": "Borland Kit"
+      },
+      {
+        "command": "borlandKit.quitWithConfirmation",
+        "title": "Salir con confirmación de grabación",
+        "category": "Borland Kit"
       }
     ],
     "keybindings": [
