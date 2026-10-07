@@ -720,6 +720,38 @@ function activate(context) {
     if (selEqual) ed.selection = new vscode.Selection(doc.positionAt(b2), doc.positionAt(e2));
   }
 
+  async function shiftLinesNative(ed, dir) {
+    const doc = ed.document;
+    const m = validBlock(doc);
+    const oldSelections = ed.selections;
+
+    // Para un bloque persistente, hacemos que la selección temporal sea
+    // exactamente el bloque y dejamos que VSCodium ejecute su propia lógica
+    // de indentación. Esto incluye indentationRules, indentSize, tabs/spaces,
+    // y las reglas específicas del lenguaje.
+    if (m) {
+      blockSelSuppressed = true;
+      try {
+        ed.selection = new vscode.Selection(
+          doc.positionAt(m.b),
+          doc.positionAt(m.e)
+        );
+        await vscode.commands.executeCommand(
+          dir > 0 ? 'editor.action.indentLines' : 'editor.action.outdentLines'
+        );
+      } finally {
+        ed.selections = oldSelections;
+        blockSelSuppressed = false;
+        refreshAll();
+      }
+    } else {
+      await vscode.commands.executeCommand(
+        dir > 0 ? 'editor.action.indentLines' : 'editor.action.outdentLines'
+      );
+    }
+    return;
+  }
+
   // Anteponer un texto arbitrario al comienzo de cada línea del bloque
   // persistente. A diferencia de shiftLines(), este comando requiere
   // explícitamente un bloque persistente y no usa la selección actual
@@ -956,8 +988,10 @@ function activate(context) {
     blockIndent: (ed) => shiftLines(ed, +1),
     blockOutdent: (ed) => shiftLines(ed, -1),
     // Indentar / desindentar un nivel según la configuración del editor.
-    blockIndentLevel: (ed) => shiftLines(ed, +1, true),
-    blockOutdentLevel: (ed) => shiftLines(ed, -1, true),
+    // blockIndentLevel: (ed) => shiftLines(ed, +1, true),
+    // blockOutdentLevel: (ed) => shiftLines(ed, -1, true),
+    blockIndentLevel: (ed) => shiftLinesNative(ed, +1),
+    blockOutdentLevel: (ed) => shiftLinesNative(ed, -1),
     // Anteponer texto arbitrario al comienzo de cada línea del bloque.
     blockPrefix: (ed) => prefixBlockLines(ed),
     // Comentar / descomentar las líneas del bloque (usa los comandos nativos
