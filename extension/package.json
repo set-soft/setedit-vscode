@@ -489,7 +489,17 @@
     },
     "colors": [
       {
-        "id": "borlandKit.tabOutline",
+        "id": "borlandKit.tabOutline1",
+        "description": "Color del recuadro con que marca los tabuladores.",
+        "defaults": {
+          "dark": "#34b934aa",
+          "light": "#2aa72aaa",
+          "highContrast": "#00ff00",
+          "highContrastLight": "#000000"
+        }
+      },
+      {
+        "id": "borlandKit.tabOutline2",
         "description": "Color del recuadro con que marca los tabuladores.",
         "defaults": {
           "dark": "#b93434aa",
