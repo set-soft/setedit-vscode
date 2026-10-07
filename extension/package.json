@@ -175,6 +175,11 @@
         "category": "Borland Kit"
       },
       {
+        "command": "borlandKit.deleteWhitespaceAhead",
+        "title": "Borrar espacios o palabra a la derecha",
+        "category": "Borland Kit"
+      },
+      {
         "command": "borlandKit.blockReplacePaste",
         "title": "Reemplazar bloque por el portapapeles",
         "category": "Borland Kit"
@@ -428,6 +433,11 @@
         "key": "ctrl+shift+end",
         "command": "borlandKit.cursorViewBottomSelect",
         "when": "editorTextFocus"
+      },
+      {
+        "key": "ctrl+t",
+        "command": "borlandKit.deleteWhitespaceAhead",
+        "when": "editorTextFocus && !editorReadonly"
       },
       {
         "key": "ctrl+k i",

@@ -319,6 +319,7 @@
 
 
 
+
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
     {"key":"right","command":"borlandKit.exec","args":{"command":"cursorRight"},"when":"editorTextFocus"},
@@ -373,6 +374,7 @@
     {"key":"ctrl+q x","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewBottom"},"when":"editorTextFocus"},
     {"key":"ctrl+shift+home","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewTopSelect"},"when":"editorTextFocus"},
     {"key":"ctrl+shift+end","command":"borlandKit.exec","args":{"command":"borlandKit.cursorViewBottomSelect"},"when":"editorTextFocus"},
+    {"key":"ctrl+t","command":"borlandKit.exec","args":{"command":"borlandKit.deleteWhitespaceAhead"},"when":"editorTextFocus && !editorReadonly"},
     {"key":"ctrl+k i","command":"borlandKit.exec","args":{"command":"borlandKit.blockIndent"},"when":"editorTextFocus"},
     {"key":"ctrl+k u","command":"borlandKit.exec","args":{"command":"borlandKit.blockOutdent"},"when":"editorTextFocus"},
     {"key":"ctrl+k tab","command":"borlandKit.exec","args":{"command":"borlandKit.blockIndentLevel"},"when":"editorTextFocus"},

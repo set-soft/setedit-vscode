@@ -227,7 +227,7 @@ function activate(context) {
 
     const exclude = vscode.workspace.getConfiguration('borlandKit').get('excludeFromWrapping', []);
     const blockKeys = (context.extension.packageJSON.contributes.keybindings || [])
-      .filter((b) => b.command.startsWith('borlandKit.block') || b.command.startsWith('borlandKit.cursorView') || b.command === 'borlandKit.replaceNext')
+      .filter((b) => b.command.startsWith('borlandKit.block') || b.command.startsWith('borlandKit.cursorView') || b.command === 'borlandKit.replaceNext' || b.command === 'borlandKit.deleteWhitespaceAhead')
       .map((b) => wrap(b.key, b.command, undefined, b.when));
     const userWrapped = (Array.isArray(user) ? user : [])
       .filter((e) => e && typeof e.key === 'string' && typeof e.command === 'string'
@@ -915,6 +915,42 @@ function activate(context) {
     cursorViewBottom: (ed) => moveToViewLine(ed, false),
     cursorViewTopSelect: (ed) => moveToViewLine(ed, true, true),
     cursorViewBottomSelect: (ed) => moveToViewLine(ed, false, true),
+    // Ctrl+T:
+    // - Si a continuación del cursor hay espacios/tabs (o fin de línea): los
+    //   borra y, si llega al fin de línea, ese salto más la indentación de la
+    //   línea siguiente, trayendo la próxima palabra al cursor. Cruza como
+    //   máximo UN salto de línea; si la siguiente está vacía hay que repetir.
+    // - Si no hay espacios (el cursor está ante una palabra o signos): borra
+    //   la palabra a la derecha (o el grupo de signos) y los espacios que le
+    //   siguen, sin cruzar de línea.
+    deleteWhitespaceAhead: async (ed) => {
+      collapseIfBlock();
+      const doc = ed.document;
+      const pos = ed.selection.active;
+      const isWs = (c) => c === ' ' || c === '\t';
+      const isWord = (c) => /[\p{L}\p{N}_]/u.test(c);
+      const skipWs = (t, c) => { while (c < t.length && isWs(t[c])) c++; return c; };
+      let ln = pos.line;
+      let text = doc.lineAt(ln).text;
+      let col;
+      const ch = text[pos.character];
+      if (ch !== undefined && !isWs(ch)) {
+        const w = isWord(ch);
+        col = pos.character;
+        while (col < text.length && !isWs(text[col]) && isWord(text[col]) === w) col++;
+        col = skipWs(text, col);
+      } else {
+        col = skipWs(text, pos.character);
+        if (col >= text.length && ln < doc.lineCount - 1) {
+          ln++;
+          text = doc.lineAt(ln).text;
+          col = skipWs(text, 0);
+        }
+      }
+      const end = new vscode.Position(ln, col);
+      if (end.isEqual(pos)) return;
+      await ed.edit((eb) => eb.delete(new vscode.Range(pos, end)));
+    },
     // Ctrl+K I / Ctrl+K U: indentar / desindentar un espacio las líneas del
     // bloque (o de la selección, o la línea actual si no hay ninguno).
     blockIndent: (ed) => shiftLines(ed, +1),
