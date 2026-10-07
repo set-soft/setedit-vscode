@@ -11,7 +11,7 @@
     {
         "key": "alt+0",
         "command": "workbench.action.quickOpen"
-    },    
+    },
     {
         "key": "alt+f3",
         "command": "workbench.action.closeActiveEditor"
@@ -316,9 +316,6 @@
         "command": "editor.action.jumpToBracket",
         "when": "editorTextFocus"
     },
-
-
-
 
     // >>> borland-kit (generado, no editar) >>>
     {"key":"left","command":"borlandKit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
