@@ -1326,7 +1326,7 @@ function activate(context) {
   updateAllTabs();
 
   const plain = {
-    macroStart, macroStop, exec, installKeybindings,
+    macroStart, macroStop, exec, installKeybindings, quitWithConfirmation,
     macroPlay: () => macroPlay(1),
     macroPlayN: async () => {
       const v = await vscode.window.showInputBox({ prompt: 'Repeticiones', value: '2' });
