@@ -78,6 +78,12 @@
                     "foreground": "#10d1d8"
                 }
             },
+            {
+                "scope": "entity.name.function.target.makefile",
+                "settings": {
+                    "foreground": "#3176f5"
+                }
+            }
         ]
 }
 }
