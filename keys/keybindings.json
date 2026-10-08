@@ -258,7 +258,17 @@
     {
         "key": "escape",
         "command": "borlandKit.blockHide",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus && !suggestWidgetVisible"
+    },
+    {// Mantener Esc para abortar el autocompletado
+        "key": "escape",
+        "command": "hideSuggestWidget",
+        "when": "suggestWidgetVisible && textInputFocus"
+    },
+    {// Forzar autocompletado
+        "key": "ctrl+tab",
+        "command": "editor.action.triggerSuggest",
+        "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly"
     },
     // Ctrl + F12: Recargar Codium / Extensiones al instante
     {
