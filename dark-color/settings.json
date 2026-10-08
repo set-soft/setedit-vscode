@@ -1,0 +1,83 @@
+{
+    "borlandKit.dialogDirectory": "last",
+    "editor.mouseWheelZoom": true,
+    "editor.fontWeight": "600",
+    "workbench.colorTheme": "Visual Studio Dark",
+    "workbench.colorCustomizations": {
+        // Cambia el color de los puntos de espacio y flechas de tabulación
+        "editorWhitespace.foreground": "#fa1313",
+        "editor.background": "#050505",
+        "editor.selectionBackground": "#474a4d",
+        "activityBar.background": "#202020",
+        "sideBar.background": "#101010",
+        "menu.background": "#202020",
+        "menu.selectionBackground": "#0078d4",
+        "menubar.selectionBackground": "#0078d4",
+        "titleBar.inactiveBackground": "#101010",
+        "titleBar.activeBackground": "#202020",
+        "editorGroupHeader.tabsBackground": "#101010",
+        "tab.activeBackground": "#0078d4",
+        "tab.inactiveBackground": "#202020",
+        "statusBar.background": "#01335a",
+        "editorLineNumber.foreground":"#4136a0",
+        "editorLineNumber.activeForeground":"#857dd1",
+        // Color del texto base/predeterminado en el código
+        "editor.foreground": "#c4bd99",
+        "gitDecoration.modifiedResourceForeground": "#07fc13",  // Color para archivos modificados (M)
+        "gitDecoration.untrackedResourceForeground": "#fc0303"  // Color para archivos untracked (U)
+    },
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "comment",
+                "settings": {
+                    "foreground": "#8b8d8b",
+                    "fontStyle": "italic"        // O "bold", "italic bold", etc.
+                }
+            },
+            {
+                "scope": "string",
+                "settings": {
+                    "foreground": "#53c7fd",
+                    "fontStyle": "bold"          // Cadenas de caracteres en negrita
+                }
+            },
+            {
+                "scope": "keyword.control",
+                "settings": {
+                    "foreground": "#3176f5"
+                }
+            },
+            {
+                "scope": "constant",
+                "settings": {
+                    "foreground": "#0c885f"
+                }
+            },
+            {
+                "scope": "punctuation.separator",
+                "settings": {
+                    "foreground": "#c77325"
+                }
+            },
+            {
+                "scope": "constant.numeric",
+                "settings": {
+                    "foreground": "#950ca1"
+                }
+            },
+            {
+                "scope": "constant.numeric.float",
+                "settings": {
+                    "foreground": "#c710d8"
+                }
+            },
+            {
+                "scope": "keyword.operator.assignment",
+                "settings": {
+                    "foreground": "#10d1d8"
+                }
+            },
+        ]
+}
+}
