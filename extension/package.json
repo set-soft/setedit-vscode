@@ -282,17 +282,20 @@
       {
         "command": "SETEdit.foldAll",
         "title": "Fold all",
-        "icon": "$(fold-down)"
+        "icon": "$(fold-down)",
+        "category": "SETEdit"
       },
       {
         "command": "SETEdit.unfoldAll",
         "title": "Unfold all",
-        "icon": "$(fold-up)"
+        "icon": "$(fold-up)",
+        "category": "SETEdit"
       },
       {
         "command": "SETEdit.foldLevel",
         "title": "Fold N levels...",
-        "icon": "$(fold)"
+        "icon": "$(fold)",
+        "category": "SETEdit"
       }
     ],
     "keybindings": [
