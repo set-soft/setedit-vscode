@@ -1,8 +1,8 @@
 {
-  "name": "borland-kit",
-  "displayName": "Borland Kit",
-  "description": "Macros de teclado (Shift+F10 / Alt+F10 / Ctrl+F10), bloques persistentes y leer/escribir bloque a disco, estilo SETEdit/RHIDE.",
-  "version": "0.9.0",
+  "name": "SETEdit",
+  "displayName": "SETEdit",
+  "description": "SETEdit/RHIDE (Borland C/Turbo C) style keybindings",
+  "version": "1.0.0",
   "publisher": "local",
   "engines": {
     "vscode": "^1.80.0"
@@ -13,9 +13,9 @@
   ],
   "contributes": {
     "configuration": {
-      "title": "Borland Kit",
+      "title": "SETEdit",
       "properties": {
-        "borlandKit.excludeFromWrapping": {
+        "SETEdit.excludeFromWrapping": {
           "type": "array",
           "items": {
             "type": "string"
@@ -26,12 +26,12 @@
           ],
           "description": "Prefijos de comandos de tu keybindings.json que NO se envuelven (no se graban en macros)."
         },
-        "borlandKit.persistentSelection": {
+        "SETEdit.persistentSelection": {
           "type": "boolean",
           "default": true,
           "description": "Las selecciones hechas con mouse o teclado quedan como bloque persistente (no se reemplazan al escribir ni se pierden al mover el cursor)."
         },
-        "borlandKit.dialogDirectory": {
+        "SETEdit.dialogDirectory": {
           "type": "string",
           "enum": [
             "document",
@@ -46,12 +46,12 @@
           ],
           "description": "Carpeta inicial de los diálogos de Ctrl+W / Ctrl+R (escribir/leer bloque). Si la carpeta elegida no sirve (no existe o es la de configuración del editor), se prueba con las otras."
         },
-        "borlandKit.browserCommand": {
+        "SETEdit.browserCommand": {
           "type": "string",
           "default": "",
           "description": "Comando para abrir URLs y archivos img:/pdf: (ej: \"firefox\" o \"firefox --new-tab\"). Vacío = navegador/visor por defecto del sistema."
         },
-        "borlandKit.showTabs": {
+        "SETEdit.showTabs": {
           "type": "boolean",
           "default": true,
           "description": "Marca con un recuadro los caracteres de tabulación del texto."
@@ -60,232 +60,232 @@
     },
     "commands": [
       {
-        "command": "borlandKit.installKeybindings",
+        "command": "SETEdit.installKeybindings",
         "title": "Instalar atajos grabables",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.macroStart",
+        "command": "SETEdit.macroStart",
         "title": "Grabar macro",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.macroStop",
+        "command": "SETEdit.macroStop",
         "title": "Detener grabación",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.macroPlay",
+        "command": "SETEdit.macroPlay",
         "title": "Reproducir macro",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.macroPlayN",
+        "command": "SETEdit.macroPlayN",
         "title": "Reproducir macro N veces",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.exec",
+        "command": "SETEdit.exec",
         "title": "Ejecutar comando (grabable)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.replaceNext",
+        "command": "SETEdit.replaceNext",
         "title": "Reemplazar siguiente",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockBegin",
+        "command": "SETEdit.blockBegin",
         "title": "Inicio de bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockEnd",
+        "command": "SETEdit.blockEnd",
         "title": "Fin de bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockHide",
+        "command": "SETEdit.blockHide",
         "title": "Ocultar bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockSelect",
+        "command": "SETEdit.blockSelect",
         "title": "Convertir bloque en selección",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockCopy",
+        "command": "SETEdit.blockCopy",
         "title": "Copiar bloque al cursor",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockMove",
+        "command": "SETEdit.blockMove",
         "title": "Mover bloque al cursor",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockDelete",
+        "command": "SETEdit.blockDelete",
         "title": "Borrar bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockWrite",
+        "command": "SETEdit.blockWrite",
         "title": "Escribir bloque a archivo",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockRead",
+        "command": "SETEdit.blockRead",
         "title": "Leer archivo en el cursor",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockClipCopy",
+        "command": "SETEdit.blockClipCopy",
         "title": "Copiar bloque al portapapeles",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockClipCut",
+        "command": "SETEdit.blockClipCut",
         "title": "Cortar bloque al portapapeles",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.symbolsInFile",
+        "command": "SETEdit.symbolsInFile",
         "title": "Símbolos del archivo (palabra bajo el cursor)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.symbolsInWorkspace",
+        "command": "SETEdit.symbolsInWorkspace",
         "title": "Símbolos del proyecto (palabra bajo el cursor)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.cursorViewTop",
+        "command": "SETEdit.cursorViewTop",
         "title": "Ir a la primera línea visible",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.cursorViewBottom",
+        "command": "SETEdit.cursorViewBottom",
         "title": "Ir a la última línea visible",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.cursorViewTopSelect",
+        "command": "SETEdit.cursorViewTopSelect",
         "title": "Seleccionar hasta la primera línea visible",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.cursorViewBottomSelect",
+        "command": "SETEdit.cursorViewBottomSelect",
         "title": "Seleccionar hasta la última línea visible",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.deleteWhitespaceAhead",
+        "command": "SETEdit.deleteWhitespaceAhead",
         "title": "Borrar espacios o palabra a la derecha",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockReplacePaste",
+        "command": "SETEdit.blockReplacePaste",
         "title": "Reemplazar bloque por el portapapeles",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockPaste",
+        "command": "SETEdit.blockPaste",
         "title": "Pegar y marcar como bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockGotoBegin",
+        "command": "SETEdit.blockGotoBegin",
         "title": "Ir al principio del bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockGotoEnd",
+        "command": "SETEdit.blockGotoEnd",
         "title": "Ir al final del bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockMarkLine",
+        "command": "SETEdit.blockMarkLine",
         "title": "Marcar línea como bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockMarkWord",
+        "command": "SETEdit.blockMarkWord",
         "title": "Marcar palabra como bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.openFileUnderCursor",
+        "command": "SETEdit.openFileUnderCursor",
         "title": "Abrir archivo o URL bajo el cursor",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockIndent",
+        "command": "SETEdit.blockIndent",
         "title": "Indentar bloque (un espacio)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockOutdent",
+        "command": "SETEdit.blockOutdent",
         "title": "Desindentar bloque (un espacio)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockIndentLevel",
+        "command": "SETEdit.blockIndentLevel",
         "title": "Indentar bloque (un nivel)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockOutdentLevel",
+        "command": "SETEdit.blockOutdentLevel",
         "title": "Desindentar bloque (un nivel)",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockComment",
+        "command": "SETEdit.blockComment",
         "title": "Comentar bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockUncomment",
+        "command": "SETEdit.blockUncomment",
         "title": "Descomentar bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockPrefix",
+        "command": "SETEdit.blockPrefix",
         "title": "Anteponer texto a cada línea del bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockUppercase",
+        "command": "SETEdit.blockUppercase",
         "title": "Bloque a MAYÚSCULAS",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockLowercase",
+        "command": "SETEdit.blockLowercase",
         "title": "Bloque a minúsculas",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.blockView",
+        "command": "SETEdit.blockView",
         "title": "Mostrar bloque",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "borlandKit.quitWithConfirmation",
+        "command": "SETEdit.quitWithConfirmation",
         "title": "Salir con confirmación de grabación",
-        "category": "Borland Kit"
+        "category": "SETEdit"
       },
       {
-        "command": "BorlandKit.foldAll",
+        "command": "SETEdit.foldAll",
         "title": "Plegar todo",
         "icon": "$(fold-down)"
       },
       {
-        "command": "BorlandKit.unfoldAll",
+        "command": "SETEdit.unfoldAll",
         "title": "Desplegar todo",
         "icon": "$(fold-up)"
       },
       {
-        "command": "BorlandKit.foldLevel",
+        "command": "SETEdit.foldLevel",
         "title": "Plegar por nivel...",
         "icon": "$(fold)"
       }
@@ -293,104 +293,104 @@
     "keybindings": [
       {
         "key": "shift+f10",
-        "command": "borlandKit.macroStart"
+        "command": "SETEdit.macroStart"
       },
       {
         "key": "alt+f10",
-        "command": "borlandKit.macroStop"
+        "command": "SETEdit.macroStop"
       },
       {
         "key": "ctrl+f10",
-        "command": "borlandKit.macroPlay"
+        "command": "SETEdit.macroPlay"
       },
       {
         "key": "ctrl+l",
-        "command": "borlandKit.replaceNext",
+        "command": "SETEdit.replaceNext",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k b",
-        "command": "borlandKit.blockBegin",
+        "command": "SETEdit.blockBegin",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k k",
-        "command": "borlandKit.blockEnd",
+        "command": "SETEdit.blockEnd",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k h",
-        "command": "borlandKit.blockHide",
+        "command": "SETEdit.blockHide",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k c",
-        "command": "borlandKit.blockCopy",
+        "command": "SETEdit.blockCopy",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k v",
-        "command": "borlandKit.blockMove",
+        "command": "SETEdit.blockMove",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k y",
-        "command": "borlandKit.blockDelete",
+        "command": "SETEdit.blockDelete",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k w",
-        "command": "borlandKit.blockWrite",
+        "command": "SETEdit.blockWrite",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k r",
-        "command": "borlandKit.blockRead",
+        "command": "SETEdit.blockRead",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+w",
-        "command": "borlandKit.blockWrite",
+        "command": "SETEdit.blockWrite",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+r",
-        "command": "borlandKit.blockRead",
+        "command": "SETEdit.blockRead",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+delete",
-        "command": "borlandKit.blockDelete",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockDelete",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "ctrl+insert",
-        "command": "borlandKit.blockClipCopy",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockClipCopy",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "shift+delete",
-        "command": "borlandKit.blockClipCut",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockClipCut",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "ctrl+c",
-        "command": "borlandKit.blockClipCopy",
-        "when": "editorTextFocus && !editorHasSelection && borlandKit.hasBlock"
+        "command": "SETEdit.blockClipCopy",
+        "when": "editorTextFocus && !editorHasSelection && SETEdit.hasBlock"
       },
       {
         "key": "ctrl+x",
-        "command": "borlandKit.blockClipCut",
-        "when": "editorTextFocus && !editorHasSelection && borlandKit.hasBlock"
+        "command": "SETEdit.blockClipCut",
+        "when": "editorTextFocus && !editorHasSelection && SETEdit.hasBlock"
       },
       {
         "key": "alt+f2",
-        "command": "borlandKit.symbolsInFile",
+        "command": "SETEdit.symbolsInFile",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+f2",
-        "command": "borlandKit.symbolsInWorkspace",
+        "command": "SETEdit.symbolsInWorkspace",
         "when": "editorTextFocus"
       },
       {
@@ -399,112 +399,112 @@
       },
       {
         "key": "ctrl+shift+insert",
-        "command": "borlandKit.blockReplacePaste",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockReplacePaste",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "shift+insert",
-        "command": "borlandKit.blockPaste",
+        "command": "SETEdit.blockPaste",
         "when": "editorTextFocus && !editorReadonly"
       },
       {
         "key": "ctrl+q b",
-        "command": "borlandKit.blockGotoBegin",
+        "command": "SETEdit.blockGotoBegin",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+q k",
-        "command": "borlandKit.blockGotoEnd",
+        "command": "SETEdit.blockGotoEnd",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k l",
-        "command": "borlandKit.blockMarkLine",
+        "command": "SETEdit.blockMarkLine",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k t",
-        "command": "borlandKit.blockMarkWord",
+        "command": "SETEdit.blockMarkWord",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+enter",
-        "command": "borlandKit.openFileUnderCursor",
+        "command": "SETEdit.openFileUnderCursor",
         "when": "editorTextFocus && !suggestWidgetVisible"
       },
       {
         "key": "ctrl+home",
-        "command": "borlandKit.cursorViewTop",
+        "command": "SETEdit.cursorViewTop",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+q e",
-        "command": "borlandKit.cursorViewTop",
+        "command": "SETEdit.cursorViewTop",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+end",
-        "command": "borlandKit.cursorViewBottom",
+        "command": "SETEdit.cursorViewBottom",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+q x",
-        "command": "borlandKit.cursorViewBottom",
+        "command": "SETEdit.cursorViewBottom",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+shift+home",
-        "command": "borlandKit.cursorViewTopSelect",
+        "command": "SETEdit.cursorViewTopSelect",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+shift+end",
-        "command": "borlandKit.cursorViewBottomSelect",
+        "command": "SETEdit.cursorViewBottomSelect",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+t",
-        "command": "borlandKit.deleteWhitespaceAhead",
+        "command": "SETEdit.deleteWhitespaceAhead",
         "when": "editorTextFocus && !editorReadonly"
       },
       {
         "key": "ctrl+k i",
-        "command": "borlandKit.blockIndent",
+        "command": "SETEdit.blockIndent",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k u",
-        "command": "borlandKit.blockOutdent",
+        "command": "SETEdit.blockOutdent",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k tab",
-        "command": "borlandKit.blockIndentLevel",
+        "command": "SETEdit.blockIndentLevel",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k shift+tab",
-        "command": "borlandKit.blockOutdentLevel",
+        "command": "SETEdit.blockOutdentLevel",
         "when": "editorTextFocus"
       },
       {
         "key": "ctrl+k p",
-        "command": "borlandKit.blockPrefix",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockPrefix",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "ctrl+k m",
-        "command": "borlandKit.blockUppercase",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockUppercase",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "ctrl+k o",
-        "command": "borlandKit.blockLowercase",
-        "when": "editorTextFocus && borlandKit.hasBlock"
+        "command": "SETEdit.blockLowercase",
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "alt+x",
-        "command": "borlandKit.quitWithConfirmation"
+        "command": "SETEdit.quitWithConfirmation"
       }
     ],
     "configurationDefaults": {
@@ -516,7 +516,7 @@
     },
     "colors": [
       {
-        "id": "borlandKit.tabOutline1",
+        "id": "SETEdit.tabOutline1",
         "description": "Color del recuadro con que marca los tabuladores.",
         "defaults": {
           "dark": "#34b934aa",
@@ -526,7 +526,7 @@
         }
       },
       {
-        "id": "borlandKit.tabOutline2",
+        "id": "SETEdit.tabOutline2",
         "description": "Color del recuadro con que marca los tabuladores.",
         "defaults": {
           "dark": "#b93434aa",
@@ -538,82 +538,82 @@
     ],
     "submenus": [
       {
-        "id": "borlandKit.tools",
+        "id": "SETEdit.tools",
         "label": "Herramientas"
       },
       {
-        "id": "borlandKit.indentMenu",
+        "id": "SETEdit.indentMenu",
         "label": "Des/indentar bloque"
       },
       {
-        "id": "borlandKit.commentMenu",
+        "id": "SETEdit.commentMenu",
         "label": "Des/comentar bloque"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "BorlandKit.foldAll",
+          "command": "SETEdit.foldAll",
           "when": "editorTextFocus",
           "group": "navigation@1"
         },
         {
-          "command": "BorlandKit.unfoldAll",
+          "command": "SETEdit.unfoldAll",
           "when": "editorTextFocus",
           "group": "navigation@1"
         },
         {
-          "command": "BorlandKit.foldLevel",
+          "command": "SETEdit.foldLevel",
           "when": "editorTextFocus",
           "group": "navigation@1"
         }
       ],
       "editor/context": [
         {
-          "submenu": "borlandKit.tools",
-          "group": "9_borlandKit",
+          "submenu": "SETEdit.tools",
+          "group": "9_SETEdit",
           "when": "editorTextFocus"
         }
       ],
-      "borlandKit.tools": [
+      "SETEdit.tools": [
         {
-          "submenu": "borlandKit.indentMenu",
+          "submenu": "SETEdit.indentMenu",
           "group": "1_block@1"
         },
         {
-          "submenu": "borlandKit.commentMenu",
+          "submenu": "SETEdit.commentMenu",
           "group": "1_block@2"
         }
       ],
-      "borlandKit.indentMenu": [
+      "SETEdit.indentMenu": [
         {
-          "command": "borlandKit.blockIndent",
+          "command": "SETEdit.blockIndent",
           "group": "1@1"
         },
         {
-          "command": "borlandKit.blockOutdent",
+          "command": "SETEdit.blockOutdent",
           "group": "1@2"
         },
         {
-          "command": "borlandKit.blockIndentLevel",
+          "command": "SETEdit.blockIndentLevel",
           "group": "1@3"
         },
         {
-          "command": "borlandKit.blockOutdentLevel",
+          "command": "SETEdit.blockOutdentLevel",
           "group": "1@4"
         },
         {
-          "command": "borlandKit.blockPrefix",
+          "command": "SETEdit.blockPrefix",
           "group": "1@5git"
         }
       ],
-      "borlandKit.commentMenu": [
+      "SETEdit.commentMenu": [
         {
-          "command": "borlandKit.blockComment",
+          "command": "SETEdit.blockComment",
           "group": "1@1"
         },
         {
-          "command": "borlandKit.blockUncomment",
+          "command": "SETEdit.blockUncomment",
           "group": "1@2"
         }
       ]

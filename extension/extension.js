@@ -1,4 +1,4 @@
-// Borland Kit 0.2: macros por COMANDOS (no por efectos), bloques persistentes, bloque <-> disco.
+// SETEdit 0.2: macros por COMANDOS (no por efectos), bloques persistentes, bloque <-> disco.
 const vscode = require('vscode');
 const fs = require('fs');
 const os = require('os');
@@ -53,10 +53,10 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function activate(context) {
   // ================================================================ MACROS
-  // Se graba la lista de comandos ejecutados a través de borlandKit.exec
-  // (los atajos "envueltos" que genera borlandKit.installKeybindings) y el
+  // Se graba la lista de comandos ejecutados a través de SETEdit.exec
+  // (los atajos "envueltos" que genera SETEdit.installKeybindings) y el
   // texto tipeado (se captura sobreescribiendo el comando 'type' mientras se graba).
-  let macro = context.globalState.get('borlandKit.macro2', []);
+  let macro = context.globalState.get('SETEdit.macro2', []);
   const rec = { on: false, steps: [] };
   let replaying = false;
   let execActive = 0;          // >0 mientras se ejecuta un comando vía exec/reproducción
@@ -68,9 +68,9 @@ function activate(context) {
 
   const blockStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 90);
   blockStatus.tooltip = 'Información del bloque persistente: clic para llevarlo a la vista';
-  blockStatus.command = 'borlandKit.blockView';
+  blockStatus.command = 'SETEdit.blockView';
 
-  const persistentSel = () => vscode.workspace.getConfiguration('borlandKit').get('persistentSelection', true);
+  const persistentSel = () => vscode.workspace.getConfiguration('SETEdit').get('persistentSelection', true);
   // Comandos que, si la selección es el bloque, la colapsan primero:
   // - borrado: no deben borrar el bloque;
   // - movimiento sin Shift: deben partir de la posición del cursor y no del
@@ -85,15 +85,15 @@ function activate(context) {
 
   // Botones de plegado
   context.subscriptions.push(
-    vscode.commands.registerCommand('BorlandKit.foldAll', () =>
+    vscode.commands.registerCommand('SETEdit.foldAll', () =>
       vscode.commands.executeCommand('editor.foldAll')
     ),
 
-    vscode.commands.registerCommand('BorlandKit.unfoldAll', () =>
+    vscode.commands.registerCommand('SETEdit.unfoldAll', () =>
       vscode.commands.executeCommand('editor.unfoldAll')
     ),
 
-    vscode.commands.registerCommand('BorlandKit.foldLevel', async () => {
+    vscode.commands.registerCommand('SETEdit.foldLevel', async () => {
       const items = [1, 2, 3, 4, 5, 6, 7].map(n => ({
         label: `Nivel ${n}`,
         level: n,
@@ -139,7 +139,7 @@ function activate(context) {
       return vscode.commands.executeCommand('default:type', args);
     }));
   } catch (e) {
-    vscode.window.showWarningMessage('Borland Kit: otra extensión controla "type"; el tipeo no se grabará en macros.');
+    vscode.window.showWarningMessage('SETEdit: otra extensión controla "type"; el tipeo no se grabará en macros.');
   }
 
   function macroStart() {
@@ -154,7 +154,7 @@ function activate(context) {
     rec.on = false;
     status.hide();
     macro = rec.steps;
-    context.globalState.update('borlandKit.macro2', macro);
+    context.globalState.update('SETEdit.macro2', macro);
     vscode.window.setStatusBarMessage(`Macro grabada: ${macro.length} pasos`, 3000);
   }
 
@@ -195,8 +195,8 @@ function activate(context) {
   }
 
   // --------------------------------------- generación de atajos "grabables"
-  const S = '// >>> borland-kit (generado, no editar) >>>';
-  const E = '// <<< borland-kit <<<';
+  const S = '// >>> SETEdit (generated, do not edit) >>>';
+  const E = '// <<< SETEdit <<<';
 
   function builtinKeys() {
     const vert = 'editorTextFocus && !suggestWidgetVisible && !parameterHintsVisible';
@@ -221,7 +221,7 @@ function activate(context) {
   }
 
   function wrap(key, command, args, when) {
-    const o = { key, command: 'borlandKit.exec', args: { command } };
+    const o = { key, command: 'SETEdit.exec', args: { command } };
     if (args !== undefined) o.args.args = args;
     if (when) o.when = when;
     return o;
@@ -230,7 +230,7 @@ function activate(context) {
   async function installKeybindings() {
     const file = path.resolve(context.globalStorageUri.fsPath, '..', '..', 'keybindings.json');
     const ok = await vscode.window.showWarningMessage(
-      `Se va a agregar un bloque generado al final de ${file} (con backup .borland-kit.bak). ¿Continuar?`,
+      `Se va a agregar un bloque generado al final de ${file} (con backup .setedit.bak). ¿Continuar?`,
       { modal: true }, 'Continuar');
     if (ok !== 'Continuar') return;
 
@@ -252,13 +252,13 @@ function activate(context) {
     for (let p = text.length - 1; p >= 0; p--) if (kinds[p] === 0 && text[p] === ']') { lastClose = p; break; }
     if (lastClose < 0) { vscode.window.showErrorMessage('keybindings.json no tiene un arreglo válido.'); return; }
 
-    const exclude = vscode.workspace.getConfiguration('borlandKit').get('excludeFromWrapping', []);
+    const exclude = vscode.workspace.getConfiguration('SETEdit').get('excludeFromWrapping', []);
     const blockKeys = (context.extension.packageJSON.contributes.keybindings || [])
-      .filter((b) => b.command.startsWith('borlandKit.block') || b.command.startsWith('borlandKit.cursorView') || b.command === 'borlandKit.replaceNext' || b.command === 'borlandKit.deleteWhitespaceAhead')
+      .filter((b) => b.command.startsWith('SETEdit.block') || b.command.startsWith('SETEdit.cursorView') || b.command === 'SETEdit.replaceNext' || b.command === 'SETEdit.deleteWhitespaceAhead')
       .map((b) => wrap(b.key, b.command, undefined, b.when));
     const userWrapped = (Array.isArray(user) ? user : [])
       .filter((e) => e && typeof e.key === 'string' && typeof e.command === 'string'
-        && !e.command.startsWith('-') && !e.command.startsWith('borlandKit.')
+        && !e.command.startsWith('-') && !e.command.startsWith('SETEdit.')
         && !exclude.some((x) => e.command.startsWith(x)))
       .map((e) => wrap(e.key, e.command, e.args, e.when));
 
@@ -277,7 +277,7 @@ function activate(context) {
     let out = text.slice(0, lastClose) + region + text.slice(lastClose);
     if (needComma) out = out.slice(0, lastBrace + 1) + ',' + out.slice(lastBrace + 1);
 
-    if (fs.existsSync(file)) fs.copyFileSync(file, file + '.borland-kit.bak');
+    if (fs.existsSync(file)) fs.copyFileSync(file, file + '.setedit.bak');
     fs.writeFileSync(file, out);
     vscode.window.showInformationMessage(`Atajos grabables instalados (${all.length}). Volvé a ejecutar este comando si cambiás keybindings.json.`);
   }
@@ -290,7 +290,7 @@ function activate(context) {
     overviewRulerColor: new vscode.ThemeColor('editor.selectionBackground'),
     overviewRulerLane: vscode.OverviewRulerLane.Center,
   });
-  let lastDir = context.globalState.get('borlandKit.lastDir2', '');
+  let lastDir = context.globalState.get('SETEdit.lastDir2', '');
 
   const key = (doc) => doc.uri.toString();
   const getMarks = (doc) => {
@@ -410,7 +410,7 @@ function activate(context) {
   function refreshAll() {
     vscode.window.visibleTextEditors.forEach(refresh);
     const ed = vscode.window.activeTextEditor;
-    vscode.commands.executeCommand('setContext', 'borlandKit.hasBlock', !!(ed && validBlock(ed.document)));
+    vscode.commands.executeCommand('setContext', 'SETEdit.hasBlock', !!(ed && validBlock(ed.document)));
     refreshBlockStatus(ed);
   }
 
@@ -510,7 +510,7 @@ function activate(context) {
   // Nunca se usa la carpeta de configuración del propio editor (ahí vive
   // keybindings.json) ni una carpeta que ya no existe.
   function dialogDir(doc) {
-    const mode = vscode.workspace.getConfiguration('borlandKit').get('dialogDirectory', 'document');
+    const mode = vscode.workspace.getConfiguration('SETEdit').get('dialogDirectory', 'document');
     const userDir = path.resolve(context.globalStorageUri.fsPath, '..', '..');
     const inside = (d, root) => {
       const r = path.relative(root, d);
@@ -528,7 +528,7 @@ function activate(context) {
   }
   const rememberDir = (fsPath) => {
     lastDir = path.dirname(fsPath);
-    context.globalState.update('borlandKit.lastDir2', lastDir);
+    context.globalState.update('SETEdit.lastDir2', lastDir);
   };
 
   // ========================================= ABRIR ARCHIVO BAJO EL CURSOR
@@ -632,7 +632,7 @@ function activate(context) {
 
   function openInBrowser(target) {
     const isUrl = URL_RE.test(target);
-    const cmd = vscode.workspace.getConfiguration('borlandKit').get('browserCommand', '').trim();
+    const cmd = vscode.workspace.getConfiguration('SETEdit').get('browserCommand', '').trim();
     const arg = isUrl ? target : vscode.Uri.file(target).toString();
     if (cmd) {
       const [bin, ...pre] = cmd.split(/\s+/);
@@ -1246,17 +1246,17 @@ function activate(context) {
   const tabDeco1 = vscode.window.createTextEditorDecorationType({
     borderStyle: 'solid',
     borderWidth: '3px',
-    borderColor: new vscode.ThemeColor('borlandKit.tabOutline1'),
+    borderColor: new vscode.ThemeColor('SETEdit.tabOutline1'),
   });
   const tabDeco2 = vscode.window.createTextEditorDecorationType({
     borderStyle: 'solid',
     borderWidth: '3px',
-    borderColor: new vscode.ThemeColor('borlandKit.tabOutline2'),
+    borderColor: new vscode.ThemeColor('SETEdit.tabOutline2'),
   });
 
   function updateTabs(ed) {
     if (!ed) return;
-    if (!vscode.workspace.getConfiguration('borlandKit').get('showTabs', true)) {
+    if (!vscode.workspace.getConfiguration('SETEdit').get('showTabs', true)) {
       ed.setDecorations(tabDeco1, []);
       ed.setDecorations(tabDeco2, []);
       return;
@@ -1291,7 +1291,7 @@ function activate(context) {
       vscode.window.visibleTextEditors.filter((ed) => ed.document === e.document).forEach(updateTabs);
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('borlandKit.showTabs')) updateAllTabs();
+      if (e.affectsConfiguration('SETEdit.showTabs')) updateAllTabs();
     })
   );
 
@@ -1363,10 +1363,10 @@ function activate(context) {
   };
 
   for (const [name, fn] of Object.entries(plain)) {
-    context.subscriptions.push(vscode.commands.registerCommand(`borlandKit.${name}`, (...a) => fn(...a)));
+    context.subscriptions.push(vscode.commands.registerCommand(`SETEdit.${name}`, (...a) => fn(...a)));
   }
   for (const [name, fn] of Object.entries(edCmds)) {
-    context.subscriptions.push(vscode.commands.registerCommand(`borlandKit.${name}`, () => {
+    context.subscriptions.push(vscode.commands.registerCommand(`SETEdit.${name}`, () => {
       const ed = vscode.window.activeTextEditor;
       if (ed) return fn(ed);
     }));

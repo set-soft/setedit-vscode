@@ -1,6 +1,6 @@
 {
     "$schema": "vscode://schemas/settings/user",
-    "borlandKit.dialogDirectory": "last",
+    "SETEdit.dialogDirectory": "last",
     "editor.mouseWheelZoom": true,
     "editor.fontWeight": "600",
     "workbench.colorTheme": "Visual Studio Dark",

@@ -29,16 +29,16 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 
 ## Wrapping:
 
-- `borlandKit.excludeFromWrapping` commands excluded from wrapping
+- `SETEdit.excludeFromWrapping` commands excluded from wrapping
 - Added with: `Ctrl+Shift+P` then `Borland Kit: Instalar atajos grabables`
 
 ## Persistent blocks
 
-- `borlandKit.persistentSelection` to enable the persitent blocks, enabled by default
+- `SETEdit.persistentSelection` to enable the persitent blocks, enabled by default
 
 ## Block Read/Write Dialog:
 
-- `borlandKit.dialogDirectory`:
+- `SETEdit.dialogDirectory`:
   - `document`: directory for the file under edition
   - `workspace`: project root
   - `last`: last one used in the dialog
