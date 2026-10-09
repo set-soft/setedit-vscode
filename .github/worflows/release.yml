@@ -1,0 +1,88 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      # Detecta tags tipo v1.0.0 o simplemente 1.0.0
+      - 'v*.*.*'
+      - '*.*.*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Necesario para pushear el commit y crear la release
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para poder cambiar de rama y ver el historial
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Checkout a la rama base
+        run: |
+          # Determina desde qué rama se creó el tag (generalmente main o master)
+          BRANCH=$(git branch -r --contains ${{ github.sha }} | grep -v HEAD | sed 's/.*origin\///' | head -n 1)
+          if [ -z "$BRANCH" ]; then BRANCH="main"; fi
+          echo "Trabajando sobre la rama: $BRANCH"
+          git checkout $BRANCH
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Extraer la versión del tag
+        id: version
+        run: |
+          # Si el tag tiene una 'v' al inicio (v1.2.3), se la quitamos para el JSON
+          VERSION=${GITHUB_REF_NAME#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Actualizar package.json
+        run: |
+          # Usamos jq para actualizar la versión del package.json
+          jq ".version = \"$VERSION\"" package.json > package.tmp.json
+          mv package.tmp.json package.json
+          # Opcional: si usas package-lock.json, podrías hacer un 'npm install' aquí para actualizarlo.
+
+      - name: Actualizar CHANGELOG.md y extraer texto
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+
+          # 1. Cambia el título de '## [Unreleased]' por '## [1.2.3] - 2026-10-09'
+          sed -i "s/## \[Unreleased\]/## \[${VERSION}\] - $DATE/i" CHANGELOG.md
+
+          # 2. Extrae el texto debajo de la nueva versión para usarlo en la Release de GitHub.
+          # (Copia desde la versión actual hasta encontrar el siguiente '## [')
+          awk "/## \[${VERSION}\]/{flag=1; next} /^## \[/{flag=0} flag" CHANGELOG.md > release_notes.txt
+
+      - name: Commit, Push y actualización del Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add package.json CHANGELOG.md
+          # Hacemos commit asegurándonos de saltar otras integraciones continuas
+          git commit -m "chore: bump versión a ${VERSION} y changelog [skip ci]" || echo "Sin cambios"
+
+          # Movemos el tag al nuevo commit que tiene las versiones cambiadas
+          git tag -f ${{ github.ref_name }}
+
+          # Empujamos el nuevo commit a la rama origen (ej: main)
+          git push origin HEAD
+
+          # Empujamos el tag reescrito
+          git push -f origin ${{ github.ref_name }}
+
+      - name: Construir el archivo VSIX
+        run: make build
+
+      - name: Crear Release en GitHub (Draft)
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: Versión ${{ github.ref_name }}
+          body_path: release_notes.txt
+          files: "*.vsix"
