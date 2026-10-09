@@ -339,7 +339,7 @@
       {
         "key": "ctrl+k v",
         "command": "SETEdit.blockMove",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus && SETEdit.hasBlock"
       },
       {
         "key": "ctrl+k y",

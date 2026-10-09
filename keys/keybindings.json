@@ -333,6 +333,26 @@
         "when": "editorTextFocus"
     },
 
+    // Ctrl+K V collides with the markdown preview.
+    // We assign the Ctrl+K Shift+V to always work.
+    // In addition Ctrl+K V also works when there is no persistent block.
+    {
+        "key": "ctrl+k shift+v",
+        "command": "markdown.showPreviewToSide",
+        "when": "editorFocus && !notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"
+    },
+    {
+        "key": "ctrl+k v",
+        "command": "-markdown.showPreviewToSide",
+        "when": "editorFocus && !notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"
+    },
+    {
+        "key": "ctrl+k v",
+        "command": "markdown.showPreviewToSide",
+        "when": "editorFocus && !SETEdit.hasBlock && !notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"
+    },
+
+
     // >>> SETEdit (generated, do not edit) >>>
     {"key":"left","command":"SETEdit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},
     {"key":"right","command":"SETEdit.exec","args":{"command":"cursorRight"},"when":"editorTextFocus"},
@@ -364,7 +384,7 @@
     {"key":"ctrl+k k","command":"SETEdit.exec","args":{"command":"SETEdit.blockEnd"},"when":"editorTextFocus"},
     {"key":"ctrl+k h","command":"SETEdit.exec","args":{"command":"SETEdit.blockHide"},"when":"editorTextFocus"},
     {"key":"ctrl+k c","command":"SETEdit.exec","args":{"command":"SETEdit.blockCopy"},"when":"editorTextFocus"},
-    {"key":"ctrl+k v","command":"SETEdit.exec","args":{"command":"SETEdit.blockMove"},"when":"editorTextFocus"},
+    {"key":"ctrl+k v","command":"SETEdit.exec","args":{"command":"SETEdit.blockMove"},"when":"editorTextFocus && SETEdit.hasBlock"},
     {"key":"ctrl+k y","command":"SETEdit.exec","args":{"command":"SETEdit.blockDelete"},"when":"editorTextFocus"},
     {"key":"ctrl+k w","command":"SETEdit.exec","args":{"command":"SETEdit.blockWrite"},"when":"editorTextFocus"},
     {"key":"ctrl+k r","command":"SETEdit.exec","args":{"command":"SETEdit.blockRead"},"when":"editorTextFocus"},
@@ -442,6 +462,8 @@
     {"key":"ctrl+q S","command":"SETEdit.exec","args":{"command":"cursorHome"},"when":"textInputFocus"},
     {"key":"ctrl+q y","command":"SETEdit.exec","args":{"command":"deleteAllRight"},"when":"textInputFocus && !editorReadonly"},
     {"key":"ctrl+q h","command":"SETEdit.exec","args":{"command":"deleteAllLeft"},"when":"textInputFocus && !editorReadonly"},
-    {"key":"ctrl+q escape","command":"SETEdit.exec","args":{"command":"editor.action.jumpToBracket"},"when":"editorTextFocus"}
+    {"key":"ctrl+q escape","command":"SETEdit.exec","args":{"command":"editor.action.jumpToBracket"},"when":"editorTextFocus"},
+    {"key":"ctrl+k shift+v","command":"SETEdit.exec","args":{"command":"markdown.showPreviewToSide"},"when":"editorFocus && !notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"},
+    {"key":"ctrl+k v","command":"SETEdit.exec","args":{"command":"markdown.showPreviewToSide"},"when":"editorFocus && !SETEdit.hasBlock && !notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"}
     // <<< SETEdit <<<
 ]
