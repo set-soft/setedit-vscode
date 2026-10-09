@@ -1,5 +1,5 @@
 [
-    // --- Archivos y Ventanas (Borland CUA) ---
+    // --- File and Windows (Borland CUA) ---
     {
         "key": "f2",
         "command": "workbench.action.files.save"
@@ -17,56 +17,56 @@
         "command": "workbench.action.closeActiveEditor"
     },
 
-    // --- Edición de Código ---
-    // Borrar línea actual (Ctrl+Y clásico)
+    // --- Code editing ---
+    // Delete line (Ctrl+Y classic)
     {
         "key": "ctrl+y",
         "command": "editor.action.deleteLines",
         "when": "textInputFocus && !editorReadonly"
     },
-    // Alt + Backspace: Undo (Borland clásico)
+    // Alt + Backspace: Undo (Borland classic)
     {
         "key": "alt+backspace",
         "command": "undo",
         "when": "textInputFocus && !editorReadonly"
     },
-    // Shift + Alt + Backspace: Redo (Borland clásico)
+    // Shift + Alt + Backspace: Redo (Borland classic)
     {
         "key": "shift+alt+backspace",
         "command": "redo",
         "when": "textInputFocus && !editorReadonly"
     },
 
-    // Ctrl + PgUp: Ir al inicio del documento (cursorTop)
+    // Ctrl + PgUp: Document start (cursorTop)
     {
         "key": "ctrl+pageup",
         "command": "cursorTop",
         "when": "textInputFocus"
     },
 
-    // Ctrl + PgDn: Ir al final del documento (cursorBottom)
+    // Ctrl + PgDn: Document end (cursorBottom)
     {
         "key": "ctrl+pagedown",
         "command": "cursorBottom",
         "when": "textInputFocus"
     },
 
-    // Ctrl + Shift + PgUp: Seleccionar hasta el inicio del documento
+    // Ctrl + Shift + PgUp: Select to document start
     {
         "key": "ctrl+shift+pageup",
         "command": "cursorTopSelect",
         "when": "textInputFocus"
     },
 
-    // Ctrl + Shift + PgDn: Seleccionar hasta el final del documento
+    // Ctrl + Shift + PgDn: Select to document end
     {
         "key": "ctrl+shift+pagedown",
         "command": "cursorBottomSelect",
         "when": "textInputFocus"
     },
 
-    // Marcadores usando Numbered Bookmarks de Alessandro Fragnani
-    // --- MARCADOR 1 ---
+    // Markers using Numbered Bookmarks by Alessandro Fragnani
+    // --- MARK 1 ---
     {
         "key": "ctrl+k 1",
         "command": "numberedBookmarks.toggleBookmark1",
@@ -78,7 +78,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 2 ---
+    // --- MARK 2 ---
     {
         "key": "ctrl+k 2",
         "command": "numberedBookmarks.toggleBookmark2",
@@ -90,7 +90,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 2 ---
+    // --- MARK 2 ---
     {
         "key": "ctrl+k 3",
         "command": "numberedBookmarks.toggleBookmark3",
@@ -102,7 +102,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 4 ---
+    // --- MARK 4 ---
     {
         "key": "ctrl+k 4",
         "command": "numberedBookmarks.toggleBookmark4",
@@ -114,7 +114,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 5 ---
+    // --- MARK 5 ---
     {
         "key": "ctrl+k 5",
         "command": "numberedBookmarks.toggleBookmark5",
@@ -126,7 +126,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 6 ---
+    // --- MARK 6 ---
     {
         "key": "ctrl+k 6",
         "command": "numberedBookmarks.toggleBookmark6",
@@ -138,7 +138,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 7 ---
+    // --- MARK 7 ---
     {
         "key": "ctrl+k 7",
         "command": "numberedBookmarks.toggleBookmark7",
@@ -150,7 +150,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 8 ---
+    // --- MARK 8 ---
     {
         "key": "ctrl+k 8",
         "command": "numberedBookmarks.toggleBookmark8",
@@ -162,7 +162,7 @@
         "when": "editorTextFocus"
     },
 
-    // --- MARCADOR 9 ---
+    // --- MARK 9 ---
     {
         "key": "ctrl+k 9",
         "command": "numberedBookmarks.toggleBookmark9",
@@ -174,9 +174,9 @@
         "when": "editorTextFocus"
     },
 
-    // --- Bloques Rectangulares / Columnas ---
+    // --- Rectangular blocks ---
 
-    // Ctrl + K, Shift + B: Activar / Desactivar modo de selección rectangular (Toggle)
+    // Ctrl + K, Shift + B: Toggle rectangular mode
     {
         "key": "ctrl+k shift+b",
         "command": "editor.action.toggleColumnSelection",
@@ -184,7 +184,7 @@
     },
 
     // Atajos directos para expandir el rectángulo con el teclado (estilo rápido)
-    // Shift + Alt + Flechas (Vienen por defecto, pero puedes verificar que estén activos):
+    // Shift + Alt + Flechas
     {
         "key": "shift+alt+down",
         "command": "cursorColumnSelectDown",
@@ -205,25 +205,25 @@
         "command": "cursorColumnSelectLeft",
         "when": "textInputFocus"
     },
-    // --- Compilación y Depuración estilo Turbo Pascal / Borland ---
-    // F9: Poner/quitar punto de interrupción (Breakpoint)
+    // --- Debug like in Turbo Pascal / Borland ---
+    // F9: Breakpoint toggle
     {
         "key": "f9",
         "command": "editor.debug.action.toggleBreakpoint",
         "when": "editorTextFocus"
     },
-    // Ctrl+F9: Ejecutar / Iniciar depuración
+    // Ctrl+F9: Debug start
     {
         "key": "ctrl+f9",
         "command": "workbench.action.debug.start"
     },
-    // F7: Paso a paso por instrucciones (Trace into / Step into)
+    // F7: Trace into / Step into
     {
         "key": "f7",
         "command": "workbench.action.debug.stepInto",
         "when": "inDebugMode"
     },
-    // F8: Paso a paso por procedimientos (Step over)
+    // F8: Step over
     {
         "key": "f8",
         "command": "workbench.action.debug.stepOver",
@@ -235,92 +235,98 @@
     //    "command": "workbench.action.debug.stop",
     //    "when": "inDebugMode"
     //},
-    // F6: Siguiente archivo abierto
+
+    // Window navigation
+    // F6: Next open file
     {
         "key": "f6",
         "command": "workbench.action.nextEditor"
     },
-    // Shift + F6: Anterior archivo abierto
+    // Shift + F6: Previous open file
     {
         "key": "shift+f6",
         "command": "workbench.action.previousEditor"
     },
-    // Ctrl + Q, F: Buscar (Find)
+
+    // Ctrl + Q, F: Find
     {
         "key": "ctrl+q f",
         "command": "actions.find"
     },
-    // Ctrl + Q, A: Buscar y Reemplazar (Find and Replace)
+    // Ctrl + Q, A: Find and Replace
     {
         "key": "ctrl+q a",
         "command": "editor.action.startFindReplaceAction"
     },
+
+    // Quick selection hide
     {
         "key": "escape",
         "command": "SETEdit.blockHide",
         "when": "editorTextFocus && !suggestWidgetVisible"
     },
-    {// Mantener Esc para abortar el autocompletado
+    {// But keep ESC to abort autocompletion
         "key": "escape",
         "command": "hideSuggestWidget",
         "when": "suggestWidgetVisible && textInputFocus"
     },
-    {// Forzar autocompletado
+
+    {// Aucomplete (forced)
         "key": "ctrl+tab",
         "command": "editor.action.triggerSuggest",
         "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly"
     },
-    // Ctrl + F12: Recargar Codium / Extensiones al instante
+
+    // Ctrl + F12: Editor reset to load the extensions again
     {
         "key": "ctrl+f12",
         "command": "workbench.action.reloadWindow"
     },
 
-    // Comandos Wordstar poco frecuentes
-    // Ctrl + Q C: Ir al final del documento (cursorBottom)
+    // Other Wordstar commands
+    // Ctrl + Q C: End of document
     {
         "key": "ctrl+q c",
         "command": "cursorBottom",
         "when": "textInputFocus"
     },
 
-    // Ctrl + Q R: Ir al inicio del documento (cursorTop)
+    // Ctrl + Q R: Start of document
     {
         "key": "ctrl+q r",
         "command": "cursorTop",
         "when": "textInputFocus"
     },
 
-    // Ctrl + Q D: Fin de línea
+    // Ctrl + Q D: End of line
     {
         "key": "ctrl+q d",
         "command": "cursorEnd",
         "when": "textInputFocus"
     },
 
-    // Ctrl + Q S: Inicio de línea
+    // Ctrl + Q S: Start of line
     {
         "key": "ctrl+q S",
         "command": "cursorHome",
         "when": "textInputFocus"
     },
 
-    // --- Borrado parcial de líneas ---
-    // Borrar hasta el FINAL de la línea (Ctrl+Q, Y clásico de Borland / WordStar)
+    // Partial line erase
+    // Erase to the end (Ctrl+Q, Y classic Borland / WordStar)
     {
         "key": "ctrl+q y",
         "command": "deleteAllRight",
         "when": "textInputFocus && !editorReadonly"
     },
-
-    // Borrar hasta el PRINCIPIO de la línea
+    // Erase to the start
     {
         "key": "ctrl+q h",
         "command": "deleteAllLeft",
         "when": "textInputFocus && !editorReadonly"
     },
 
-    // Saltar al delimitador complementario () {} []
+    // Jump to pair () {} []
     {
         "key": "ctrl+q escape",
         "command": "editor.action.jumpToBracket",
