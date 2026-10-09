@@ -55,6 +55,11 @@
           "type": "boolean",
           "default": true,
           "description": "Make the tabs visible, using a border around them"
+        },
+        "SETEdit.foldButtons": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show icons to un/fold (in editor tabs)"
         }
       }
     },

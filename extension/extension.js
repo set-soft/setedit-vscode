@@ -85,7 +85,7 @@ function activate(context) {
   ]);
 
   // Botones de plegado
-  if (foldButtons) {
+  if (foldButtons()) {
     context.subscriptions.push(
       vscode.commands.registerCommand('SETEdit.foldAll', () =>
         vscode.commands.executeCommand('editor.foldAll')
