@@ -24,12 +24,12 @@
             "workbench.action.debug.",
             "editor.debug.action."
           ],
-          "description": "Prefijos de comandos de tu keybindings.json que NO se envuelven (no se graban en macros)."
+          "description": "Command prefixes to be excluded from macro recording."
         },
         "SETEdit.persistentSelection": {
           "type": "boolean",
           "default": true,
-          "description": "Las selecciones hechas con mouse o teclado quedan como bloque persistente (no se reemplazan al escribir ni se pierden al mover el cursor)."
+          "description": "The mouse and keyboard selections remains while typing."
         },
         "SETEdit.dialogDirectory": {
           "type": "string",
@@ -40,253 +40,253 @@
           ],
           "default": "document",
           "enumDescriptions": [
-            "Carpeta del archivo que estás editando",
-            "Raíz del proyecto abierto",
-            "Última carpeta usada en estos diálogos"
+            "Directory of the file under edition",
+            "Project root",
+            "Last path used in the dialog"
           ],
-          "description": "Carpeta inicial de los diálogos de Ctrl+W / Ctrl+R (escribir/leer bloque). Si la carpeta elegida no sirve (no existe o es la de configuración del editor), se prueba con las otras."
+          "description": "Starting path for the Ctrl+W / Ctrl+R (block read/write) dialog. Skipped if missing."
         },
         "SETEdit.browserCommand": {
           "type": "string",
           "default": "",
-          "description": "Comando para abrir URLs y archivos img:/pdf: (ej: \"firefox\" o \"firefox --new-tab\"). Vacío = navegador/visor por defecto del sistema."
+          "description": "Command used to open URLs and img:/pdf: (i.e.: \"firefox\" o \"firefox --new-tab\"). Uses the system default when empty."
         },
         "SETEdit.showTabs": {
           "type": "boolean",
           "default": true,
-          "description": "Marca con un recuadro los caracteres de tabulación del texto."
+          "description": "Make the tabs visible, using a border around them"
         }
       }
     },
     "commands": [
       {
         "command": "SETEdit.installKeybindings",
-        "title": "Instalar atajos grabables",
+        "title": "Install recordable keybindings",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.macroStart",
-        "title": "Grabar macro",
+        "title": "Record macro",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.macroStop",
-        "title": "Detener grabación",
+        "title": "Stop macro recording",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.macroPlay",
-        "title": "Reproducir macro",
+        "title": "Replay recorded macro",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.macroPlayN",
-        "title": "Reproducir macro N veces",
+        "title": "Replay recorded macro N times",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.exec",
-        "title": "Ejecutar comando (grabable)",
+        "title": "Execute a recordable command (wrapper)",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.replaceNext",
-        "title": "Reemplazar siguiente",
+        "title": "Replace next",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockBegin",
-        "title": "Inicio de bloque",
+        "title": "Block start (selection)",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockEnd",
-        "title": "Fin de bloque",
+        "title": "Block end (selection)",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockHide",
-        "title": "Ocultar bloque",
+        "title": "Hide block (selection)",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockSelect",
-        "title": "Convertir bloque en selección",
+        "title": "Convert block into selection",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockCopy",
-        "title": "Copiar bloque al cursor",
+        "title": "Copy block and paste it",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockMove",
-        "title": "Mover bloque al cursor",
+        "title": "Move block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockDelete",
-        "title": "Borrar bloque",
+        "title": "Hide block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockWrite",
-        "title": "Escribir bloque a archivo",
+        "title": "Write block to disk",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockRead",
-        "title": "Leer archivo en el cursor",
+        "title": "Read block from disk",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockClipCopy",
-        "title": "Copiar bloque al portapapeles",
+        "title": "Copy block to clipboard",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockClipCut",
-        "title": "Cortar bloque al portapapeles",
+        "title": "Cut block to clipboard",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.symbolsInFile",
-        "title": "Símbolos del archivo (palabra bajo el cursor)",
+        "title": "Look for symbol in file (word under cursor)",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.symbolsInWorkspace",
-        "title": "Símbolos del proyecto (palabra bajo el cursor)",
+        "title": "Look for symbol in project (word under cursor)",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.cursorViewTop",
-        "title": "Ir a la primera línea visible",
+        "title": "Jump to first visible line",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.cursorViewBottom",
-        "title": "Ir a la última línea visible",
+        "title": "Jump to last visible line",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.cursorViewTopSelect",
-        "title": "Seleccionar hasta la primera línea visible",
+        "title": "Select to first visible line",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.cursorViewBottomSelect",
-        "title": "Seleccionar hasta la última línea visible",
+        "title": "Select to last visible line",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.deleteWhitespaceAhead",
-        "title": "Borrar espacios o palabra a la derecha",
+        "title": "Erase spaces and/or words at the right",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockReplacePaste",
-        "title": "Reemplazar bloque por el portapapeles",
+        "title": "Replace from clipboard",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockPaste",
-        "title": "Pegar y marcar como bloque",
+        "title": "Paste and mark as block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockGotoBegin",
-        "title": "Ir al principio del bloque",
+        "title": "Jump to block start",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockGotoEnd",
-        "title": "Ir al final del bloque",
+        "title": "Jump to block end",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockMarkLine",
-        "title": "Marcar línea como bloque",
+        "title": "Select line as block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockMarkWord",
-        "title": "Marcar palabra como bloque",
+        "title": "Select word as block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.openFileUnderCursor",
-        "title": "Abrir archivo o URL bajo el cursor",
+        "title": "Open URL or file under cursor",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockIndent",
-        "title": "Indentar bloque (un espacio)",
+        "title": "Indent block one space",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockOutdent",
-        "title": "Desindentar bloque (un espacio)",
+        "title": "Outdent block one space",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockIndentLevel",
-        "title": "Indentar bloque (un nivel)",
+        "title": "Indent block one level",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockOutdentLevel",
-        "title": "Desindentar bloque (un nivel)",
+        "title": "Outdent block one space",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockComment",
-        "title": "Comentar bloque",
+        "title": "Comment block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockUncomment",
-        "title": "Descomentar bloque",
+        "title": "Uncomment block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockPrefix",
-        "title": "Anteponer texto a cada línea del bloque",
+        "title": "Arbitrary indent",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockUppercase",
-        "title": "Bloque a MAYÚSCULAS",
+        "title": "UPPERCASE block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockLowercase",
-        "title": "Bloque a minúsculas",
+        "title": "lowercase block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.blockView",
-        "title": "Mostrar bloque",
+        "title": "Show block",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.quitWithConfirmation",
-        "title": "Salir con confirmación de grabación",
+        "title": "Exit with save and confirmation",
         "category": "SETEdit"
       },
       {
         "command": "SETEdit.foldAll",
-        "title": "Plegar todo",
+        "title": "Fold all",
         "icon": "$(fold-down)"
       },
       {
         "command": "SETEdit.unfoldAll",
-        "title": "Desplegar todo",
+        "title": "Unfold old",
         "icon": "$(fold-up)"
       },
       {
         "command": "SETEdit.foldLevel",
-        "title": "Plegar por nivel...",
+        "title": "Fold N levels...",
         "icon": "$(fold)"
       }
     ],
@@ -517,7 +517,7 @@
     "colors": [
       {
         "id": "SETEdit.tabOutline1",
-        "description": "Color del recuadro con que marca los tabuladores.",
+        "description": "First color for the tabs border.",
         "defaults": {
           "dark": "#34b934aa",
           "light": "#2aa72aaa",
@@ -527,7 +527,7 @@
       },
       {
         "id": "SETEdit.tabOutline2",
-        "description": "Color del recuadro con que marca los tabuladores.",
+        "description": "Second color for the tabs border.",
         "defaults": {
           "dark": "#b93434aa",
           "light": "#a72a2aaa",
@@ -539,15 +539,15 @@
     "submenus": [
       {
         "id": "SETEdit.tools",
-        "label": "Herramientas"
+        "label": "SETEdit tools"
       },
       {
         "id": "SETEdit.indentMenu",
-        "label": "Des/indentar bloque"
+        "label": "Indent block"
       },
       {
         "id": "SETEdit.commentMenu",
-        "label": "Des/comentar bloque"
+        "label": "Un/comment block"
       }
     ],
     "menus": {

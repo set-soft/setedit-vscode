@@ -67,7 +67,7 @@ function activate(context) {
   status.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
 
   const blockStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 90);
-  blockStatus.tooltip = 'Información del bloque persistente: clic para llevarlo a la vista';
+  blockStatus.tooltip = 'Persistent block information: click to show the block';
   blockStatus.command = 'SETEdit.blockView';
 
   const persistentSel = () => vscode.workspace.getConfiguration('SETEdit').get('persistentSelection', true);
@@ -142,7 +142,7 @@ function activate(context) {
       return vscode.commands.executeCommand('default:type', args);
     }));
   } catch (e) {
-    vscode.window.showWarningMessage('SETEdit: otra extensión controla "type"; el tipeo no se grabará en macros.');
+    vscode.window.showWarningMessage('SETEdit: another extension controls "type"; typed text won\'t be recorded by macros.');
   }
 
   function macroStart() {
@@ -158,7 +158,7 @@ function activate(context) {
     status.hide();
     macro = rec.steps;
     context.globalState.update('SETEdit.macro2', macro);
-    vscode.window.setStatusBarMessage(`Macro grabada: ${macro.length} pasos`, 3000);
+    vscode.window.setStatusBarMessage(`Recorded macro: ${macro.length} steps`, 3000);
   }
 
   const runCommand = (cmd, args) =>
@@ -175,8 +175,8 @@ function activate(context) {
   }
 
   async function macroPlay(times = 1) {
-    if (rec.on) { vscode.window.showWarningMessage('Detené la grabación antes de reproducir.'); return; }
-    if (!macro.length) { vscode.window.showInformationMessage('No hay macro grabada.'); return; }
+    if (rec.on) { vscode.window.showWarningMessage('Stop recording before replay.'); return; }
+    if (!macro.length) { vscode.window.showInformationMessage('No recorded macro.'); return; }
     replaying = true;
     execActive++;
     try {
@@ -233,9 +233,9 @@ function activate(context) {
   async function installKeybindings() {
     const file = path.resolve(context.globalStorageUri.fsPath, '..', '..', 'keybindings.json');
     const ok = await vscode.window.showWarningMessage(
-      `Se va a agregar un bloque generado al final de ${file} (con backup .setedit.bak). ¿Continuar?`,
-      { modal: true }, 'Continuar');
-    if (ok !== 'Continuar') return;
+      `A block will be added at the end of ${file} (with backup .setedit.bak). Continue?`,
+      { modal: true }, 'Continue');
+    if (ok !== 'Continue') return;
 
     let text = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '[\n]\n';
     const i = text.indexOf(S), j = text.indexOf(E);
@@ -248,12 +248,12 @@ function activate(context) {
     const kinds = mask(text);
     let user;
     try { user = parseJsonc(text, kinds); } catch (e) {
-      vscode.window.showErrorMessage(`No pude interpretar keybindings.json: ${e.message}`);
+      vscode.window.showErrorMessage(`Failed to interpret keybindings.json: ${e.message}`);
       return;
     }
     let lastClose = -1;
     for (let p = text.length - 1; p >= 0; p--) if (kinds[p] === 0 && text[p] === ']') { lastClose = p; break; }
-    if (lastClose < 0) { vscode.window.showErrorMessage('keybindings.json no tiene un arreglo válido.'); return; }
+    if (lastClose < 0) { vscode.window.showErrorMessage('keybindings.json doesn\`t contain a valid array.'); return; }
 
     const exclude = vscode.workspace.getConfiguration('SETEdit').get('excludeFromWrapping', []);
     const blockKeys = (context.extension.packageJSON.contributes.keybindings || [])
@@ -282,7 +282,7 @@ function activate(context) {
 
     if (fs.existsSync(file)) fs.copyFileSync(file, file + '.setedit.bak');
     fs.writeFileSync(file, out);
-    vscode.window.showInformationMessage(`Atajos grabables instalados (${all.length}). Volvé a ejecutar este comando si cambiás keybindings.json.`);
+    vscode.window.showInformationMessage(`Installed recordable keybindings: (${all.length}). Execute this command after changes to keybindings.json.`);
   }
 
   // ================================================================ BLOQUES
@@ -331,7 +331,7 @@ function activate(context) {
 
     const chars = text.length;
 
-    blockStatus.text = `$(selection) ${lines} líneas · ${chars} caracteres`;
+    blockStatus.text = `$(selection) ${lines} lines · ${chars} chars`;
     blockStatus.show();
   }
   function blockView(ed) {
@@ -501,7 +501,7 @@ function activate(context) {
 
   function needBlock(ed) {
     const m = validBlock(ed.document);
-    if (!m) vscode.window.showWarningMessage('No hay bloque marcado (Ctrl+K B / Ctrl+K K, o seleccioná texto).');
+    if (!m) vscode.window.showWarningMessage('No block selection (use Ctrl+K B / Ctrl+K K, or just select text).');
     return m;
   }
   function setBlock(ed, b, e) {
@@ -653,17 +653,17 @@ function activate(context) {
 
   async function openFileUnderCursor(ed) {
     const raw = extractTarget(ed);
-    if (!raw || !raw.name) { vscode.window.showInformationMessage('No hay nombre de archivo bajo el cursor.'); return; }
+    if (!raw || !raw.name) { vscode.window.showInformationMessage('No filename under cursor.'); return; }
     const t = parseTarget(raw);
     if (t.url) { openInBrowser(t.url); return; }
-    if (!t.name) { vscode.window.showInformationMessage('No hay nombre de archivo bajo el cursor.'); return; }
+    if (!t.name) { vscode.window.showInformationMessage('No filename under cursor.'); return; }
     const found = await resolveFile(t.name, ed.document);
-    if (!found.length) { vscode.window.showWarningMessage(`No se encontró "${t.name}".`); return; }
+    if (!found.length) { vscode.window.showWarningMessage(`Can't find "${t.name}".`); return; }
     let pick = found[0];
     if (found.length > 1) {
       const chosen = await vscode.window.showQuickPick(
         found.map((f) => ({ label: vscode.workspace.asRelativePath(f.p), f })),
-        { placeHolder: `Hay ${found.length} coincidencias para "${t.name}"` });
+        { placeHolder: `${found.length} matches found for "${t.name}"` });
       if (!chosen) return;
       pick = chosen.f;
     }
@@ -795,8 +795,8 @@ function activate(context) {
     else { b = e = off(ed); }
 
     const prefix = await vscode.window.showInputBox({
-      prompt: 'Texto a anteponer al comienzo de cada línea del bloque',
-      placeHolder: 'Por ejemplo: "    ", "> ", "// "'
+      prompt: 'Text to put before each line in the block',
+      placeHolder: 'Examples: "    ", "> ", "// "'
     });
 
     // Escape cancela la operación.
@@ -1070,7 +1070,7 @@ function activate(context) {
       const e = ln < doc.lineCount - 1
         ? doc.offsetAt(new vscode.Position(ln + 1, 0))
         : doc.offsetAt(doc.lineAt(ln).range.end);
-      if (e <= b) { vscode.window.showInformationMessage('La línea está vacía.'); return; }
+      if (e <= b) { vscode.window.showInformationMessage('Empty line.'); return; }
       const a = ed.selection.active;
       ed.selection = new vscode.Selection(a, a);
       setBlock(ed, b, e);
@@ -1078,7 +1078,7 @@ function activate(context) {
     blockMarkWord: (ed) => {
       const doc = ed.document;
       const r = doc.getWordRangeAtPosition(ed.selection.active);
-      if (!r) { vscode.window.showInformationMessage('No hay palabra bajo el cursor.'); return; }
+      if (!r) { vscode.window.showInformationMessage('No word under cursor.'); return; }
       const a = ed.selection.active;
       ed.selection = new vscode.Selection(a, a);
       setBlock(ed, doc.offsetAt(r.start), doc.offsetAt(r.end));
@@ -1128,7 +1128,7 @@ function activate(context) {
       const m = needBlock(ed); if (!m) return;
       const doc = ed.document;
       const text = await vscode.env.clipboard.readText();
-      if (!text) { vscode.window.showWarningMessage('El portapapeles está vacío.'); return; }
+      if (!text) { vscode.window.showWarningMessage('The clipboard is empty.'); return; }
       const b = m.b, e = m.e;
       const len = lenInDoc(doc, text);
       await blockOp(ed, (eb) => eb.replace(rng(doc, b, e), text), () => ({ b, e: b + len }));
@@ -1183,7 +1183,7 @@ function activate(context) {
       const m = needBlock(ed); if (!m) return;
       const doc = ed.document;
       const p = off(ed);
-      if (p > m.b && p < m.e) { vscode.window.showWarningMessage('El cursor está dentro del bloque.'); return; }
+      if (p > m.b && p < m.e) { vscode.window.showWarningMessage('The cursor is inside the block.'); return; }
       const b = m.b, e = m.e, len = e - b;
       const text = doc.getText(rng(doc, b, e));
       const ns = p >= e ? p - len : p;
@@ -1203,26 +1203,26 @@ function activate(context) {
       let text;
       if (m) text = doc.getText(rng(doc, m.b, m.e));
       else if (!ed.selection.isEmpty) text = ed.selections.map((s) => doc.getText(s)).join(doc.eol === vscode.EndOfLine.CRLF ? '\r\n' : '\n');
-      else { vscode.window.showWarningMessage('No hay bloque ni selección para escribir.'); return; }
+      else { vscode.window.showWarningMessage('No block or selection to write.'); return; }
       const uri = await vscode.window.showSaveDialog({
-        title: 'Escribir bloque a archivo',
-        saveLabel: 'Escribir bloque',
-        defaultUri: vscode.Uri.file(path.join(dialogDir(doc), 'bloque.txt')),
+        title: 'Write block to file',
+        saveLabel: 'Write block',
+        defaultUri: vscode.Uri.file(path.join(dialogDir(doc), 'block.txt')),
       });
       if (!uri) return;
       try {
         await vscode.workspace.fs.writeFile(uri, Buffer.from(text, 'utf8'));
         rememberDir(uri.fsPath);
-        vscode.window.setStatusBarMessage(`Bloque escrito en ${uri.fsPath}`, 3000);
+        vscode.window.setStatusBarMessage(`Block written to ${uri.fsPath}`, 3000);
       } catch (err) {
-        vscode.window.showErrorMessage(`No se pudo escribir: ${err.message}`);
+        vscode.window.showErrorMessage(`Failed to write ${err.message}`);
       }
     },
     blockRead: async (ed) => {
       const doc = ed.document;
       const uris = await vscode.window.showOpenDialog({
-        title: 'Leer archivo en la posición del cursor',
-        openLabel: 'Leer',
+        title: 'Read file to cursor position',
+        openLabel: 'Read',
         canSelectMany: false,
         canSelectFolders: false,
         defaultUri: vscode.Uri.file(dialogDir(doc)),
@@ -1232,7 +1232,7 @@ function activate(context) {
       try {
         text = Buffer.from(await vscode.workspace.fs.readFile(uris[0])).toString('utf8');
       } catch (err) {
-        vscode.window.showErrorMessage(`No se pudo leer: ${err.message}`);
+        vscode.window.showErrorMessage(`Failed to read: ${err.message}`);
         return;
       }
       rememberDir(uris[0].fsPath);
@@ -1244,7 +1244,7 @@ function activate(context) {
 
   // ============================================ VISIBILIDAD DE TABULADORES
   // Los espacios del final de línea los muestra el editor (renderWhitespace:
-  // "trailing"). Los tabuladores se marcan acá con un recuadro punteado, sin
+  // "trailing"). Los tabuladores se marcan acá con un recuadro, sin
   // tocar el resto de los espacios.
   const tabDeco1 = vscode.window.createTextEditorDecorationType({
     borderStyle: 'solid',
@@ -1303,26 +1303,26 @@ function activate(context) {
 
     for (const doc of dirty) {
       const name = doc.isUntitled
-        ? 'Archivo sin guardar'
+        ? 'Unsaved file'
         : vscode.workspace.asRelativePath(doc.uri);
 
       const answer = await vscode.window.showWarningMessage(
-        `El archivo "${name}" tiene cambios sin guardar.`,
+        `The file "${name}" was modified.`,
         { modal: true },
-        'Guardar',
-        'No guardar'
+        'Save',
+        'Discard'
       );
 
       if (answer === undefined) {
         return;
       }
 
-      if (answer === 'Guardar') {
+      if (answer === 'Save') {
         const ok = await doc.save();
         if (!ok || doc.isDirty) {
           return;
         }
-      } else if (answer === 'No guardar') {
+      } else if (answer === 'Discard') {
         // workbench.action.files.revert actúa sobre el editor activo.
         const ed = vscode.window.visibleTextEditors.find(
           (e) => e.document === doc
@@ -1359,7 +1359,7 @@ function activate(context) {
     macroStart, macroStop, exec, installKeybindings, quitWithConfirmation,
     macroPlay: () => macroPlay(1),
     macroPlayN: async () => {
-      const v = await vscode.window.showInputBox({ prompt: 'Repeticiones', value: '2' });
+      const v = await vscode.window.showInputBox({ prompt: 'Repetitions', value: '2' });
       const n = parseInt(v, 10);
       if (n > 0) await macroPlay(n);
     },

@@ -10,8 +10,7 @@
     "editor.lineHeight": 1.2,
     "editor.fontSize": 15,
     "workbench.colorCustomizations": {
-        // Cambia el color de los puntos de espacio y flechas de tabulación
-        "editorWhitespace.foreground": "#fa1313",
+        "editorWhitespace.foreground": "#fa1313",  // Color for the trailing spaces
         "editor.background": "#050505",
         "editor.selectionBackground": "#474a4d",
         "activityBar.background": "#202020",
@@ -27,10 +26,9 @@
         "statusBar.background": "#01335a",
         "editorLineNumber.foreground":"#4136a0",
         "editorLineNumber.activeForeground":"#857dd1",
-        // Color del texto base/predeterminado en el código
-        "editor.foreground": "#c4bd99",
-        "gitDecoration.modifiedResourceForeground": "#07fc13",  // Color para archivos modificados (M)
-        "gitDecoration.untrackedResourceForeground": "#fc0303"  // Color para archivos untracked (U)
+        "editor.foreground": "#c4bd99",  // Default color for the code
+        "gitDecoration.modifiedResourceForeground": "#07fc13",  // Color for modified files (M)
+        "gitDecoration.untrackedResourceForeground": "#fc0303"  // Color untracked files (U)
     },
     "editor.tokenColorCustomizations": {
         "textMateRules": [
