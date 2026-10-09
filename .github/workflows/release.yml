@@ -63,7 +63,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add package.json CHANGELOG.md
+          git add extension/package.json CHANGELOG.md
           # Hacemos commit asegurándonos de saltar otras integraciones continuas
           git commit -m "chore: bump versión a ${VERSION} y changelog [skip ci]" || echo "Sin cambios"
 
