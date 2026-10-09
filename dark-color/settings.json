@@ -87,6 +87,7 @@
             }
         ]
 },
-"git.confirmSync": false,
+"git.confirmSync": false,  // Push without confirm
+"git.enableSmartCommit": true,  // Commit is all by default
 //"workbench.editor.enablePreview": false
 }
