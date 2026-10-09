@@ -66,4 +66,8 @@ In `settings.json`:
 ```
     "editor.fontFamily": "'JetBrains Mono', monospace",
     "editor.fontLigatures": true,
+    "editor.fontWeight": "600",
+    "editor.letterSpacing": 0,
+    "editor.lineHeight": 1.2,
+    "editor.fontSize": 15,
 ```
