@@ -273,6 +273,21 @@
         "command": "borlandKit.quitWithConfirmation",
         "title": "Salir con confirmación de grabación",
         "category": "Borland Kit"
+      },
+      {
+        "command": "BorlandKit.foldAll",
+        "title": "Plegar todo",
+        "icon": "$(fold-down)"
+      },
+      {
+        "command": "BorlandKit.unfoldAll",
+        "title": "Desplegar todo",
+        "icon": "$(fold-up)"
+      },
+      {
+        "command": "BorlandKit.foldLevel",
+        "title": "Plegar por nivel...",
+        "icon": "$(fold)"
       }
     ],
     "keybindings": [
@@ -536,6 +551,23 @@
       }
     ],
     "menus": {
+      "editor/title": [
+        {
+          "command": "BorlandKit.foldAll",
+          "when": "editorTextFocus",
+          "group": "navigation@1"
+        },
+        {
+          "command": "BorlandKit.unfoldAll",
+          "when": "editorTextFocus",
+          "group": "navigation@1"
+        },
+        {
+          "command": "BorlandKit.foldLevel",
+          "when": "editorTextFocus",
+          "group": "navigation@1"
+        }
+      ],
       "editor/context": [
         {
           "submenu": "borlandKit.tools",

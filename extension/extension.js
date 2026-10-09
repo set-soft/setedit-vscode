@@ -83,6 +83,33 @@ function activate(context) {
     'cursorWordStartLeft', 'cursorWordStartRight', 'cursorWordEndLeft', 'cursorWordEndRight',
   ]);
 
+  // Botones de plegado
+  context.subscriptions.push(
+    vscode.commands.registerCommand('BorlandKit.foldAll', () =>
+      vscode.commands.executeCommand('editor.foldAll')
+    ),
+
+    vscode.commands.registerCommand('BorlandKit.unfoldAll', () =>
+      vscode.commands.executeCommand('editor.unfoldAll')
+    ),
+
+    vscode.commands.registerCommand('BorlandKit.foldLevel', async () => {
+      const items = [1, 2, 3, 4, 5, 6, 7].map(n => ({
+        label: `Nivel ${n}`,
+        level: n,
+      }));
+
+      const pick = await vscode.window.showQuickPick(items, {
+        placeHolder: '¿Qué nivel de fold querés aplicar?',
+      });
+
+      if (pick) {
+        await vscode.commands.executeCommand(`editor.unfoldAll`);
+        await vscode.commands.executeCommand(`editor.foldLevel${pick.level}`);
+      }
+    })
+  );
+
   // Si la selección actual ES el bloque, se colapsa antes de escribir/borrar:
   // así el bloque no se reemplaza ni se borra por tipear.
   function collapseIfBlock() {
