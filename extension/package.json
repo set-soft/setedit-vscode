@@ -3,7 +3,11 @@
   "displayName": "SETEdit",
   "description": "SETEdit/RHIDE (Borland C/Turbo C) style keybindings",
   "version": "1.0.0",
-  "publisher": "local",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/set-soft/setedit-vscode.git"
+  },
+  "publisher": "set-soft",
   "engines": {
     "vscode": "^1.80.0"
   },
