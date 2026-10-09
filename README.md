@@ -30,7 +30,7 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 ## Wrapping:
 
 - `SETEdit.excludeFromWrapping` commands excluded from wrapping
-- Added with: `Ctrl+Shift+P` then `Borland Kit: Instalar atajos grabables`
+- Added with: `Ctrl+Shift+P` then `SETEdit: Instalar atajos grabables`
 
 ## Persistent blocks
 
