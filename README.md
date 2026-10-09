@@ -472,6 +472,10 @@ In `settings.json`:
 "editor.fontSize": 15,
 ```
 
+### More settings examples
+
+The `dark-color/settings.json` contains various configuration examples, you can take ideas from this file.
+
 ## License
 
 [MIT](LICENSE)
