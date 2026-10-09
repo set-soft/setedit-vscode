@@ -4,6 +4,8 @@
     "editor.mouseWheelZoom": true,
     "editor.fontWeight": "600",
     "workbench.colorTheme": "Visual Studio Dark",
+    "editor.fontFamily": "'JetBrains Mono', monospace",
+    "editor.fontLigatures": true,
     "workbench.colorCustomizations": {
         // Cambia el color de los puntos de espacio y flechas de tabulación
         "editorWhitespace.foreground": "#fa1313",

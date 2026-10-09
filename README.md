@@ -57,3 +57,13 @@ Add to `settings.json`:
         "editorWhitespace.foreground": "#fa1313"
     }
 ```
+## Font
+
+A popular font is [JetBrains Mono](https://www.jetbrains.com/lp/mono/), which supports ligatures (joins characters to show something better)
+
+In `settings.json`:
+
+```
+    "editor.fontFamily": "'JetBrains Mono', monospace",
+    "editor.fontLigatures": true,
+```
