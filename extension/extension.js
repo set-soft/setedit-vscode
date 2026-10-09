@@ -71,6 +71,7 @@ function activate(context) {
   blockStatus.command = 'SETEdit.blockView';
 
   const persistentSel = () => vscode.workspace.getConfiguration('SETEdit').get('persistentSelection', true);
+  const foldButtons = () => vscode.workspace.getConfiguration('SETEdit').get('foldButtons', true);
   // Comandos que, si la selección es el bloque, la colapsan primero:
   // - borrado: no deben borrar el bloque;
   // - movimiento sin Shift: deben partir de la posición del cursor y no del
@@ -84,31 +85,33 @@ function activate(context) {
   ]);
 
   // Botones de plegado
-  context.subscriptions.push(
-    vscode.commands.registerCommand('SETEdit.foldAll', () =>
-      vscode.commands.executeCommand('editor.foldAll')
-    ),
+  if (foldButtons) {
+    context.subscriptions.push(
+      vscode.commands.registerCommand('SETEdit.foldAll', () =>
+        vscode.commands.executeCommand('editor.foldAll')
+      ),
 
-    vscode.commands.registerCommand('SETEdit.unfoldAll', () =>
-      vscode.commands.executeCommand('editor.unfoldAll')
-    ),
+      vscode.commands.registerCommand('SETEdit.unfoldAll', () =>
+        vscode.commands.executeCommand('editor.unfoldAll')
+      ),
 
-    vscode.commands.registerCommand('SETEdit.foldLevel', async () => {
-      const items = [1, 2, 3, 4, 5, 6, 7].map(n => ({
-        label: `Nivel ${n}`,
-        level: n,
-      }));
+      vscode.commands.registerCommand('SETEdit.foldLevel', async () => {
+        const items = [1, 2, 3, 4, 5, 6, 7].map(n => ({
+          label: `Nivel ${n}`,
+          level: n,
+        }));
 
-      const pick = await vscode.window.showQuickPick(items, {
-        placeHolder: '¿Qué nivel de fold querés aplicar?',
-      });
+        const pick = await vscode.window.showQuickPick(items, {
+          placeHolder: '¿Qué nivel de fold querés aplicar?',
+        });
 
-      if (pick) {
-        await vscode.commands.executeCommand(`editor.unfoldAll`);
-        await vscode.commands.executeCommand(`editor.foldLevel${pick.level}`);
-      }
-    })
-  );
+        if (pick) {
+          await vscode.commands.executeCommand(`editor.unfoldAll`);
+          await vscode.commands.executeCommand(`editor.foldLevel${pick.level}`);
+        }
+      })
+    );
+  }
 
   // Si la selección actual ES el bloque, se colapsa antes de escribir/borrar:
   // así el bloque no se reemplaza ni se borra por tipear.

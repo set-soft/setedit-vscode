@@ -36,6 +36,10 @@ Configuration for VSCode/VSCodium to behave similar to SETEdit
 
 - `SETEdit.persistentSelection` to enable the persitent blocks, enabled by default
 
+## Fold buttons
+
+- `SETEdit.foldButtons` to enable the buttons to fold/unfold, enabled by default
+
 ## Block Read/Write Dialog:
 
 - `SETEdit.dialogDirectory`:
