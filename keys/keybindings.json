@@ -427,6 +427,8 @@
     {"key":"shift+f6","command":"SETEdit.exec","args":{"command":"workbench.action.previousEditor"}},
     {"key":"ctrl+q f","command":"SETEdit.exec","args":{"command":"actions.find"}},
     {"key":"ctrl+q a","command":"SETEdit.exec","args":{"command":"editor.action.startFindReplaceAction"}},
+    {"key":"escape","command":"SETEdit.exec","args":{"command":"hideSuggestWidget"},"when":"suggestWidgetVisible && textInputFocus"},
+    {"key":"ctrl+tab","command":"SETEdit.exec","args":{"command":"editor.action.triggerSuggest"},"when":"editorHasCompletionItemProvider && textInputFocus && !editorReadonly"},
     {"key":"ctrl+f12","command":"SETEdit.exec","args":{"command":"workbench.action.reloadWindow"}},
     {"key":"ctrl+q c","command":"SETEdit.exec","args":{"command":"cursorBottom"},"when":"textInputFocus"},
     {"key":"ctrl+q r","command":"SETEdit.exec","args":{"command":"cursorTop"},"when":"textInputFocus"},
