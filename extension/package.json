@@ -131,7 +131,7 @@
       },
       {
         "command": "SETEdit.blockDelete",
-        "title": "Hide block",
+        "title": "Delete block",
         "category": "SETEdit"
       },
       {
@@ -231,7 +231,7 @@
       },
       {
         "command": "SETEdit.blockOutdent",
-        "title": "Outdent block one space",
+        "title": "Outdent block one level",
         "category": "SETEdit"
       },
       {
@@ -286,7 +286,7 @@
       },
       {
         "command": "SETEdit.unfoldAll",
-        "title": "Unfold old",
+        "title": "Unfold all",
         "icon": "$(fold-up)"
       },
       {
@@ -609,7 +609,7 @@
         },
         {
           "command": "SETEdit.blockPrefix",
-          "group": "1@5git"
+          "group": "1@5"
         }
       ],
       "SETEdit.commentMenu": [
