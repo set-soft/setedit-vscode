@@ -92,5 +92,6 @@
 },
 "git.confirmSync": false,  // Push without confirm
 "git.enableSmartCommit": true, // Commit is all by default
+"workbench.iconTheme": "vscode-icons", // Nice icons
 //"workbench.editor.enablePreview": false
 }
