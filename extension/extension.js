@@ -968,7 +968,7 @@ function activate(context) {
         blockSelSuppressed = false;
       }
     },
-    // Alt+F2 / Alt+Shift+F2: lista de símbolos del archivo / del proyecto,
+    // Alt+F2 / Ctrl+F2: lista de símbolos del archivo / del proyecto,
     // filtrada con la palabra bajo el cursor (o la selección).
     symbolsInFile: (ed) => quickOpenWithWord(ed, '@'),
     symbolsInWorkspace: (ed) => quickOpenWithWord(ed, '#'),
