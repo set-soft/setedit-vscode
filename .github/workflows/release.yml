@@ -43,8 +43,8 @@ jobs:
       - name: Actualizar package.json
         run: |
           # Usamos jq para actualizar la versión del package.json
-          jq ".version = \"$VERSION\"" package.json > package.tmp.json
-          mv package.tmp.json package.json
+          jq ".version = \"$VERSION\"" extension/package.json > extension/package.tmp.json
+          mv extension/package.tmp.json extension/package.json
           # Opcional: si usas package-lock.json, podrías hacer un 'npm install' aquí para actualizarlo.
 
       - name: Actualizar CHANGELOG.md y extraer texto
