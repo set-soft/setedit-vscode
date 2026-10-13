@@ -11,10 +11,13 @@
   "engines": {
     "vscode": "^1.80.0"
   },
-  "main": "./extension.js",
+  "main": "./extension/extension.js",
   "activationEvents": [
     "onStartupFinished"
   ],
+  "dependencies": {
+    "mathjs": "^15.2.0"
+  },
   "contributes": {
     "configuration": {
       "title": "SETEdit",

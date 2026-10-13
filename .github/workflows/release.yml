@@ -43,9 +43,8 @@ jobs:
       - name: Actualizar package.json
         run: |
           # Usamos jq para actualizar la versión del package.json
-          jq ".version = \"$VERSION\"" extension/package.json > extension/package.tmp.json
-          mv extension/package.tmp.json extension/package.json
-          # Opcional: si usas package-lock.json, podrías hacer un 'npm install' aquí para actualizarlo.
+          jq ".version = \"$VERSION\"" package.json > package.tmp.json
+          mv package.tmp.json package.json
 
       - name: Actualizar CHANGELOG.md y extraer texto
         run: |
@@ -63,7 +62,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add extension/package.json CHANGELOG.md
+          git add package.json CHANGELOG.md
           # Hacemos commit asegurándonos de saltar otras integraciones continuas
           git commit -m "chore: bump versión a ${VERSION} y changelog [skip ci]" || echo "Sin cambios"
 

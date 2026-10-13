@@ -2,8 +2,6 @@
 .PHONY: build clean
 
 build:
-	cp extension/package.json .
-	cp extension/extension.js .
 	# 1. Instalar dependencias si las hubiera
 	npm install
 	# 2. Usar vsce para empaquetar la extensión.
