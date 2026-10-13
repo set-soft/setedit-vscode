@@ -67,6 +67,22 @@
           "type": "boolean",
           "default": true,
           "description": "Show icons to un/fold (in editor tabs)"
+        },
+        "SETEdit.advanced.bypassInputFormatting": {
+          "type": "boolean",
+          "default": false,
+          "description": "Don't replace newlines with spaces in the calculator"
+        },
+        "SETEdit.advanced.decimalPlaces": {
+          "type": "boolean",
+          "default": false,
+          "minimum": -1,
+          "description": "Number of decimal places to format evaluated numbers in the calculator; this is to avoid floating point precision issues, and is recommended to not be changed. Set to -1 to disable formatting."
+        },
+        "SETEdit.humanFormattedOutput": {
+        "type": "boolean",
+          "default": false,
+          "description": "If true, the output of the calculator will be formatted for human readability. For example, thousand separators will be added to large numbers."
         }
       }
     },
@@ -284,6 +300,11 @@
       {
         "command": "SETEdit.quitWithConfirmation",
         "title": "Exit with save and confirmation",
+        "category": "SETEdit"
+      },
+      {
+        "command": "SETEdit.evaluateExpression",
+        "title": "Evaluate Expression",
         "category": "SETEdit"
       },
       {

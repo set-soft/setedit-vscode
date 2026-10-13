@@ -63,6 +63,7 @@ The repository has two parts:
 - Exit session with save confirmation (`Alt+X`; if you use the menu or the
   close button you get the native behavior)
 - Fold buttons in the editor title bar
+- Calculator/evaluator
 
 ## Requirements
 
@@ -217,6 +218,12 @@ column 0 doesn't include that last line.
 | `SETEdit.unfoldAll` | Unfold all | Runs `editor.unfoldAll`. Button in the editor title bar. |
 | `SETEdit.foldLevel` | Fold N levels... | Asks for a level (1 to 7), unfolds everything and folds that level. Button in the editor title bar. |
 
+### Others
+
+| Command ID | Title | Description |
+|------------|-------|-------------|
+| `SETEdit.evaluateExpression` | Evaluate expression | Opens a dialog to evaluate the selected (or word under cursor) expression. |
+
 ## Keybindings defined by the extension
 
 These are contributed by the extension itself (`contributes.keybindings`).
@@ -284,6 +291,9 @@ buttons) and `SETEdit.installKeybindings`.
 | `SETEdit.browserCommand` | string | `""` | Command used to open URLs and `img:`/`pdf:` targets, e.g. `firefox` or `firefox --new-tab`. The system default is used when empty. |
 | `SETEdit.showTabs` | boolean | `true` | Makes tab characters visible by drawing a border around each one (alternating between two colors). |
 | `SETEdit.foldButtons` | boolean | `true` | Shows the un/fold buttons in the editor title section (along with the editor tabs). |
+| `SETEdit.advanced.bypassInputFormatting` | `false` |  Don't replace newlines with spaces in the calculator. |
+| `SETEdit.advanced.decimalPlaces` | 14 | Number of decimal places to format evaluated numbers in the calculator; this is to avoid floating point precision issues, and is recommended to not be changed. Set to -1 to disable formatting. |
+| `SETEdit.humanFormattedOutput` | `false` | If true, the output of the calculator will be formatted for human readability. For example, thousand separators will be added to large numbers. |
 
 ## Settings overridden by default
 
@@ -478,7 +488,7 @@ The `dark-color/settings.json` contains various configuration examples, you can 
 
 ## License
 
-[MIT](LICENSE)
+[GPL v3](LICENSE)
 
 
 ## Authors
@@ -486,3 +496,4 @@ The `dark-color/settings.json` contains various configuration examples, you can 
 - Claude Sonnet 5.5
 - ChatGPT 5.6 Luna
 - Salvador E. Tropea
+- Calculator code from [vscode-calculator](https://github.com/Lixquid/vscode-calculator)

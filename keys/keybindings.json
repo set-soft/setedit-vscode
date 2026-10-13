@@ -352,6 +352,12 @@
         "when": "editorFocus && !SETEdit.hasBlock && !notebookEditorFocused && editorLangId =~ /^(markdown|prompt|instructions|chatagent|skill)$/"
     },
 
+    // Calculator using "Calculator" extension by Lixquid
+    {
+        "key": "alt+f4",
+        "command": "SETEdit.evaluateExpression",
+        "when": "editorTextFocus"
+    },
 
     // >>> SETEdit (generated, do not edit) >>>
     {"key":"left","command":"SETEdit.exec","args":{"command":"cursorLeft"},"when":"editorTextFocus"},

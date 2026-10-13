@@ -1,10 +1,14 @@
-// SETEdit 0.2: macros por COMANDOS (no por efectos), bloques persistentes, bloque <-> disco.
+// SETEdit: macros por COMANDOS (no por efectos), bloques persistentes, bloque <-> disco.
 const vscode = require('vscode');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const cp = require('child_process');
+
+// For calculator
+const { evaluate: mathEval, format } = require('mathjs');
+const intl = new Intl.NumberFormat(undefined, { useGrouping: true, });
 
 // ------------------------------------------------------------ utilidades JSONC
 // kinds: 0 = código, 1 = string, 2 = comentario
@@ -144,6 +148,109 @@ function activate(context) {
   } catch (e) {
     vscode.window.showWarningMessage('SETEdit: another extension controls "type"; typed text won\'t be recorded by macros.');
   }
+
+  // -----------------------------------------------
+  // Calculator (from Liquix's Calculator extension)
+  // -----------------------------------------------
+  function evaluateStr(input) {
+    if (!vscode.workspace.getConfiguration("SETEdit").get("advanced.bypassInputFormatting", false)) {
+      // Math.js does not support newlines in expressions, so we replace them with spaces.
+      input = input.replaceAll("\r", "").replaceAll("\n", " ");
+    }
+
+    try {
+      const result = mathEval(input);
+      const config = vscode.workspace.getConfiguration("SETEdit");
+      switch (typeof result) {
+        case "function":
+          return "Function";
+        case "number":
+        case "bigint": {
+          const decimalPlaces = config.get("advanced.decimalPlaces", 14);
+          let formattedValue;
+
+          // Format the number to avoid floating point imprecision issues
+          if (decimalPlaces === -1) {
+            formattedValue = String(result);
+          } else {
+            formattedValue = format(result, { precision: decimalPlaces, });
+          }
+
+          // Export with thousands separators (if specified in the current locale)
+          // if enabled
+          if (config.get("humanFormattedOutput", false)) {
+            return intl.format(Number(formattedValue));
+          } else {
+            return formattedValue;
+          }
+        }
+        default:
+          return String(result);
+      }
+    } catch (ex) {
+      console.error("Error evaluating expression:", ex);
+      return undefined;
+    }
+  }
+
+  function evaluateExpression() {
+    let output = undefined;
+
+    // Obtener el texto inicial (selección o palabra/expresión bajo el cursor)
+    let initialText = "";
+    const editor = vscode.window.activeTextEditor;
+
+    if (editor) {
+        const selection = editor.selection;
+
+        if (!selection.isEmpty) {
+            // Caso A: Hay texto seleccionado explícitamente
+            initialText = editor.document.getText(selection);
+        } else {
+            // Caso B: No hay selección; buscar la expresión alrededor del cursor.
+            // Usamos un regex para que tome números y operadores matemáticos continuos:
+            const mathRegex = /[\w\d\.\+\-\*\/\^\(\)]+/;
+            const wordRange = editor.document.getWordRangeAtPosition(selection.active, mathRegex);
+
+            if (wordRange) {
+                initialText = editor.document.getText(wordRange);
+            }
+        }
+    }
+
+    const box = vscode.window.createInputBox();
+    box.title = "Math Input";
+    box.placeholder = "Expression";
+    box.buttons = [
+      vscode.QuickInputButtons.Back,
+      {
+        iconPath: new vscode.ThemeIcon("copy"),
+        tooltip: "Copy Result",
+      },
+    ];
+
+    // Si encontramos texto inicial, precargarlo y evaluarlo de inmediato
+    if (initialText) {
+        box.value = initialText;
+        output = evaluateStr(initialText);
+        box.prompt = output ?? "Error";
+    }
+
+    box.onDidChangeValue((value) => {
+      output = evaluateStr(value);
+      box.prompt = output ?? "Error";
+    });
+
+    box.onDidAccept(() => {
+      if (output !== undefined) {
+        vscode.env.clipboard.writeText(output).then(() => { vscode.window.showInformationMessage("Copied: "+output); });
+      }
+      box.dispose();
+    });
+
+    box.show();
+  }
+  // End of calculator stuff
 
   function macroStart() {
     if (rec.on) return;
@@ -525,7 +632,7 @@ function activate(context) {
     const usable = (d) => d && fs.existsSync(d) && !inside(d, userDir);
     const order = mode === 'last' ? [lastDir, docDir, wsDir]
       : mode === 'workspace' ? [wsDir, docDir, lastDir]
-      : [docDir, wsDir, lastDir];
+        : [docDir, wsDir, lastDir];
     for (const d of order) if (usable(d)) return d;
     return os.homedir();
   }
@@ -736,14 +843,14 @@ function activate(context) {
     const e2 = Math.max(b2, e + totalDelta);
 
     const editFn = (eb) => {
-       for (const item of starts) {
+      for (const item of starts) {
         const pos = item.line.range.start;
         if (dir > 0) {
           eb.insert(pos, item.text);
         } else {
           eb.delete(new vscode.Range(pos, pos.translate(0, item.text.length)));
         }
-       }
+      }
     };
     if (m) await blockOp(ed, editFn, () => ({ b: b2, e: e2 }));
     else await ed.edit(editFn);
@@ -1356,7 +1463,7 @@ function activate(context) {
   updateAllTabs();
 
   const plain = {
-    macroStart, macroStop, exec, installKeybindings, quitWithConfirmation,
+    macroStart, macroStop, exec, installKeybindings, quitWithConfirmation, evaluateExpression,
     macroPlay: () => macroPlay(1),
     macroPlayN: async () => {
       const v = await vscode.window.showInputBox({ prompt: 'Repetitions', value: '2' });
