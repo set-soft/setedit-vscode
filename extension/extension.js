@@ -166,7 +166,8 @@ function activate(context) {
           return "Function";
         case "number":
         case "bigint": {
-          const decimalPlaces = config.get("advanced.decimalPlaces", 14);
+          const rawDecimals = config.get("advanced.decimalPlaces", 14);
+          const decimalPlaces = Number.isInteger(Number(rawDecimals)) ? Number(rawDecimals) : 14;
           let formattedValue;
 
           // Format the number to avoid floating point imprecision issues
@@ -188,69 +189,159 @@ function activate(context) {
           return String(result);
       }
     } catch (ex) {
-      console.error("Error evaluating expression:", ex);
+      console.error("Error evaluating expression:", ex.message || String(ex));
       return undefined;
     }
   }
 
-  function evaluateExpression() {
-    let output = undefined;
+  const HISTORY_CALC_KEY = "mathHistory";
+  const HISTORY_CALC_MAX = 50;
 
-    // Obtener el texto inicial (selección o palabra/expresión bajo el cursor)
-    let initialText = "";
-    const editor = vscode.window.activeTextEditor;
+  // `context` es el ExtensionContext que recibe tu activate()
+  let historyCalc = context.globalState.get(HISTORY_CALC_KEY, []);
 
-    if (editor) {
-        const selection = editor.selection;
-
-        if (!selection.isEmpty) {
-            // Caso A: Hay texto seleccionado explícitamente
-            initialText = editor.document.getText(selection);
-        } else {
-            // Caso B: No hay selección; buscar la expresión alrededor del cursor.
-            // Usamos un regex para que tome números y operadores matemáticos continuos:
-            const mathRegex = /[\w\d\.\+\-\*\/\^\(\)]+/;
-            const wordRange = editor.document.getWordRangeAtPosition(selection.active, mathRegex);
-
-            if (wordRange) {
-                initialText = editor.document.getText(wordRange);
-            }
-        }
-    }
-
-    const box = vscode.window.createInputBox();
-    box.title = "Math Input";
-    box.placeholder = "Expression";
-    box.buttons = [
-      vscode.QuickInputButtons.Back,
-      {
-        iconPath: new vscode.ThemeIcon("copy"),
-        tooltip: "Copy Result",
-      },
-    ];
-
-    // Si encontramos texto inicial, precargarlo y evaluarlo de inmediato
-    if (initialText) {
-        box.value = initialText;
-        output = evaluateStr(initialText);
-        box.prompt = output ?? "Error";
-    }
-
-    box.onDidChangeValue((value) => {
-      output = evaluateStr(value);
-      box.prompt = output ?? "Error";
-    });
-
-    box.onDidAccept(() => {
-      if (output !== undefined) {
-        vscode.env.clipboard.writeText(output).then(() => { vscode.window.showInformationMessage("Copied: "+output); });
-      }
-      box.dispose();
-    });
-
-    box.show();
+  function saveHistoryCalc() {
+    context.globalState.update(HISTORY_CALC_KEY, historyCalc);
   }
+
+  function addToHistoryCalc(expr, result) {
+    // Si ya existía, se mueve al principio
+    historyCalc = historyCalc.filter((h) => h.expr !== expr);
+    historyCalc.unshift({ expr, result });
+    historyCalc = historyCalc.slice(0, HISTORY_CALC_MAX);
+    saveHistoryCalc();
+  }
+
+  function getInitialText() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return "";
+
+    const selection = editor.selection;
+    if (!selection.isEmpty) {
+      return editor.document.getText(selection);
+    }
+
+    const mathRegex = /[\w\.\+\-\*\/\^\(\)]+/;
+    const wordRange = editor.document.getWordRangeAtPosition(selection.active, mathRegex);
+    return wordRange ? editor.document.getText(wordRange) : "";
+  }
+
+  function copyResult(result) {
+    vscode.env.clipboard.writeText(result).then(() => {
+      vscode.window.showInformationMessage("Copied: " + result);
+    });
+  }
+
+  function evaluateExpression() {
+    const editButton = {
+      iconPath: new vscode.ThemeIcon("edit"),
+      tooltip: "Edit this expression",
+    };
+    const deleteButton = {
+      iconPath: new vscode.ThemeIcon("trash"),
+      tooltip: "Remove from history",
+    };
+    const copyButton = {
+      iconPath: new vscode.ThemeIcon("copy"),
+      tooltip: "Copy Result",
+    };
+
+    let liveOutput = undefined;
+
+    const qp = vscode.window.createQuickPick();
+    qp.title = "Math Input";
+    qp.placeholder = "Type an expression or pick one from the history";
+    qp.buttons = [copyButton];
+
+    function historyItem(h) {
+      return {
+        label: h.expr,
+        description: "= " + h.result,
+        iconPath: new vscode.ThemeIcon("history"),
+        buttons: [editButton, deleteButton],
+        alwaysShow: true, // el filtrado lo hacemos nosotros
+        expr: h.expr,
+      };
+    }
+
+    function refresh() {
+      const value = qp.value.trim();
+      const items = [];
+
+      liveOutput = undefined;
+      if (value) {
+        liveOutput = evaluateStr(value);
+        items.push({
+          label: value,
+          description: liveOutput !== undefined ? "= " + liveOutput : "Error",
+          iconPath: new vscode.ThemeIcon(liveOutput !== undefined ? "symbol-operator" : "error"),
+          alwaysShow: true,
+          live: true,
+        });
+      }
+
+      const needle = value.toLowerCase();
+      for (const h of historyCalc) {
+        if (h.expr === value) continue; // ya está arriba como ítem en vivo
+        if (!needle || h.expr.toLowerCase().includes(needle)) {
+          items.push(historyItem(h));
+        }
+      }
+
+      qp.items = items;
+    }
+
+    qp.onDidChangeValue(refresh);
+
+    qp.onDidTriggerButton((button) => {
+      if (button === copyButton && liveOutput !== undefined) {
+        copyResult(liveOutput);
+      }
+    });
+
+    qp.onDidTriggerItemButton(({ item, button }) => {
+      if (button === editButton) {
+        // Carga la expresión en el input para editarla
+        qp.value = item.expr;
+        refresh();
+      } else if (button === deleteButton) {
+        historyCalc = historyCalc.filter((h) => h.expr !== item.expr);
+        saveHistoryCalc();
+        refresh();
+      }
+    });
+
+    qp.onDidAccept(() => {
+      const sel = qp.activeItems[0];
+      if (!sel) return;
+
+      let expr, result;
+      if (sel.live) {
+        expr = sel.label;
+        result = liveOutput;
+      } else {
+        // Se reevalúa por si cambió la config (decimales, formato, etc.)
+        expr = sel.expr;
+        result = evaluateStr(expr);
+      }
+
+      if (result === undefined) return; // expresión inválida: no hace nada
+
+      addToHistoryCalc(expr, result);
+      copyResult(result);
+      qp.dispose();
+    });
+
+    qp.onDidHide(() => qp.dispose());
+
+    // Precarga selección / expresión bajo el cursor
+    qp.value = getInitialText();
+    refresh();
+    qp.show();
+  }
+  // -----------------------------------------------
   // End of calculator stuff
+  // -----------------------------------------------
 
   function macroStart() {
     if (rec.on) return;
