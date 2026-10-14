@@ -74,8 +74,8 @@
           "description": "Don't replace newlines with spaces in the calculator"
         },
         "SETEdit.advanced.decimalPlaces": {
-          "type": "boolean",
-          "default": false,
+          "type": "integer",
+          "default": 14,
           "minimum": -1,
           "description": "Number of decimal places to format evaluated numbers in the calculator; this is to avoid floating point precision issues, and is recommended to not be changed. Set to -1 to disable formatting."
         },
