@@ -223,6 +223,7 @@ column 0 doesn't include that last line.
 | Command ID | Title | Description |
 |------------|-------|-------------|
 | `SETEdit.evaluateExpression` | Evaluate expression | Opens a dialog to evaluate the selected (or word under cursor) expression. |
+| `SETEdit.toggleInlayHints` | Toggle inlay hints | Toggles the inlay hints on/off. I.e. Python argument name hint. |
 
 ## Keybindings defined by the extension
 

@@ -1551,10 +1551,18 @@ function activate(context) {
     await vscode.commands.executeCommand('workbench.action.quit');
   }
 
+  async function toggleInlayHints() {
+    const cfg = vscode.workspace.getConfiguration('editor');
+    const actual = cfg.get('inlayHints.enabled');
+    const nuevo = actual === 'off' ? 'on' : 'off';
+    await cfg.update('inlayHints.enabled', nuevo, vscode.ConfigurationTarget.Global);
+    vscode.window.setStatusBarMessage(`Inlay hints: ${nuevo}`, 2000);
+  }
+
   updateAllTabs();
 
   const plain = {
-    macroStart, macroStop, exec, installKeybindings, quitWithConfirmation, evaluateExpression,
+    macroStart, macroStop, exec, installKeybindings, quitWithConfirmation, evaluateExpression, toggleInlayHints,
     macroPlay: () => macroPlay(1),
     macroPlayN: async () => {
       const v = await vscode.window.showInputBox({ prompt: 'Repetitions', value: '2' });

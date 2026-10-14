@@ -324,6 +324,11 @@
         "title": "Fold N levels...",
         "icon": "$(fold)",
         "category": "SETEdit"
+      },
+      {
+        "command": "toggleInlayHints",
+        "title": "Toggle inlay hints",
+        "category": "SETEdit"
       }
     ],
     "keybindings": [
@@ -541,6 +546,10 @@
       {
         "key": "alt+x",
         "command": "SETEdit.quitWithConfirmation"
+      },
+      {
+        "command": "SETEdit.toggleInlayHints",
+        "key": "ctrl+alt+i"
       }
     ],
     "configurationDefaults": {
