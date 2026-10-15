@@ -256,7 +256,8 @@
     // Ctrl + Q, A: Find and Replace
     {
         "key": "ctrl+q a",
-        "command": "editor.action.startFindReplaceAction"
+        "command": "SETEdit.findAndReplaceWordUnderCursor"
+        // "command": "editor.action.startFindReplaceAction" no word under cursor
     },
 
     // Quick selection hide
@@ -458,7 +459,6 @@
     {"key":"f6","command":"SETEdit.exec","args":{"command":"workbench.action.nextEditor"}},
     {"key":"shift+f6","command":"SETEdit.exec","args":{"command":"workbench.action.previousEditor"}},
     {"key":"ctrl+q f","command":"SETEdit.exec","args":{"command":"actions.find"}},
-    {"key":"ctrl+q a","command":"SETEdit.exec","args":{"command":"editor.action.startFindReplaceAction"}},
     {"key":"escape","command":"SETEdit.exec","args":{"command":"hideSuggestWidget"},"when":"suggestWidgetVisible && textInputFocus"},
     {"key":"ctrl+tab","command":"SETEdit.exec","args":{"command":"editor.action.triggerSuggest"},"when":"editorHasCompletionItemProvider && textInputFocus && !editorReadonly"},
     {"key":"ctrl+f12","command":"SETEdit.exec","args":{"command":"workbench.action.reloadWindow"}},

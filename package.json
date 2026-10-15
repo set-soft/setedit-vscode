@@ -93,6 +93,11 @@
         "category": "SETEdit"
       },
       {
+        "command": "SETEdit.findAndReplaceWordUnderCursor",
+        "title": "Find and replace starting with word under cursor",
+        "category": "SETEdit"
+      },
+      {
         "command": "SETEdit.macroStart",
         "title": "Record macro",
         "category": "SETEdit"

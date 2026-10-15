@@ -1157,55 +1157,66 @@ function activate(context) {
       const needsConfigToggle = (prevValue !== 'never');
 
       const sub = vscode.workspace.onDidChangeTextDocument((ev) => {
-          if (ev.document === doc && ev.contentChanges.length && endOff === null) {
-              const c = ev.contentChanges[0];
-              endOff = c.rangeOffset + c.text.length;
-          }
+        if (ev.document === doc && ev.contentChanges.length && endOff === null) {
+          const c = ev.contentChanges[0];
+          endOff = c.rangeOffset + c.text.length;
+        }
       });
 
       try {
-          // Solo actualizamos si es estrictamente necesario (ahorra I/O de disco)
-          if (needsConfigToggle) {
-              await config.update('seedSearchStringFromSelection', 'never', vscode.ConfigurationTarget.Global);
+        // Solo actualizamos si es estrictamente necesario (ahorra I/O de disco)
+        if (needsConfigToggle) {
+          await config.update('seedSearchStringFromSelection', 'never', vscode.ConfigurationTarget.Global);
+        }
+
+        // Disparamos la acción de iniciar búsqueda
+        await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
+
+        // Realizamos el reemplazo
+        for (let i = 0; i < 2 && endOff === null; i++) {
+          await vscode.commands.executeCommand('editor.action.replaceOne');
+
+          for (let j = 0; j < 10 && endOff === null; j++) {
+            await yieldEventLoop();
           }
+        }
 
-          // Disparamos la acción de iniciar búsqueda
-          await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
+        // Devolvemos el foco al editor (se lo llevó el diálogo de reemplazo)
+        await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
 
-          // Realizamos el reemplazo
-          for (let i = 0; i < 2 && endOff === null; i++) {
-              await vscode.commands.executeCommand('editor.action.replaceOne');
-
-              for (let j = 0; j < 10 && endOff === null; j++) {
-                  await yieldEventLoop();
-              }
-          }
-
-          // Devolvemos el foco al editor (se lo llevó el diálogo de reemplazo)
-          await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
-
-          if (endOff !== null) {
-              const pos = doc.positionAt(endOff);
-              ed.selection = new vscode.Selection(pos, pos);
-              ed.revealRange(new vscode.Range(pos, pos));
-          } else {
-              ed.selection = origSel;
-          }
+        if (endOff !== null) {
+          const pos = doc.positionAt(endOff);
+          ed.selection = new vscode.Selection(pos, pos);
+          ed.revealRange(new vscode.Range(pos, pos));
+        } else {
+          ed.selection = origSel;
+        }
 
       } finally {
-          sub.dispose();
-          blockSelSuppressed = false;
+        sub.dispose();
+        blockSelSuppressed = false;
 
-          // Restauramos la configuración solo si la cambiamos
-          if (needsConfigToggle) {
-              // Hacemos el update de forma asíncrona pero sin hacer `await`,
-              // para liberar el comando rápido y que la UI de VSCode termine su trabajo.
-              config.update('seedSearchStringFromSelection', prevValue, vscode.ConfigurationTarget.Global)
-                    .then(() => {}, (err) => console.error(err));
-          }
+        // Restauramos la configuración solo si la cambiamos
+        if (needsConfigToggle) {
+          // Hacemos el update de forma asíncrona pero sin hacer `await`,
+          // para liberar el comando rápido y que la UI de VSCode termine su trabajo.
+          config.update('seedSearchStringFromSelection', prevValue, vscode.ConfigurationTarget.Global)
+            .then(() => {}, (err) => console.error(err));
+        }
 
-          replaceNextRunning = false;
+        replaceNextRunning = false;
       }
+    },
+    // Ctrl + Q, A: Find and Replace (Estilo Borland)
+    findAndReplaceWordUnderCursor: async () => {
+      // Llama a Find normal. Esto fuerza a VS Code a capturar
+      // la palabra bajo el cursor (o la selección si la hay).
+      await vscode.commands.executeCommand('actions.find');
+
+      // Inmediatamente llama a Replace.
+      // Como el widget ya está abierto y la palabra ya fue sembrada,
+      // la heurística de Replace ignora el cursor vacío pero despliega el input.
+      await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
     },
     // Alt+F2 / Ctrl+F2: lista de símbolos del archivo / del proyecto,
     // filtrada con la palabra bajo el cursor (o la selección).
