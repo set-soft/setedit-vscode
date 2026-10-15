@@ -9,6 +9,10 @@ const cp = require('child_process');
 // For calculator
 const { evaluate: mathEval, format } = require('mathjs');
 const intl = new Intl.NumberFormat(undefined, { useGrouping: true, });
+// Usado para evitar reemplazos simultáneos
+let replaceNextRunning = false;
+// Utilidad para esperas breves en el Event Loop
+const yieldEventLoop = () => new Promise(r => setTimeout(r, 5));
 
 // ------------------------------------------------------------ utilidades JSONC
 // kinds: 0 = código, 1 = string, 2 = comentario
@@ -1135,35 +1139,72 @@ function activate(context) {
     // (replaceOne nativo primero selecciona la coincidencia y recién en la
     // siguiente llamada reemplaza; por eso se repite si el texto no cambió.)
     replaceNext: async (ed) => {
+      // Evitar que dos reemplazos se realicen concurrentemente
+      if (replaceNextRunning) return;
+      replaceNextRunning = true;
+
       const doc = ed.document;
       const origSel = ed.selection;
       let endOff = null;
       blockSelSuppressed = true;
+
+      // Queremos evitar que tome la selección o palabra bajo el cursor para esta nueva búsqueda
+      const config = vscode.workspace.getConfiguration('editor.find');
+      const inspect = config.inspect('seedSearchStringFromSelection');
+      const prevValue = inspect.globalValue;
+
+      // Bandera para saber si realmente tocamos la configuración
+      const needsConfigToggle = (prevValue !== 'never');
+
       const sub = vscode.workspace.onDidChangeTextDocument((ev) => {
-        if (ev.document === doc && ev.contentChanges.length && endOff === null) {
-          const c = ev.contentChanges[0];
-          endOff = c.rangeOffset + c.text.length; // fin del reemplazo, ya en el documento modificado
-        }
+          if (ev.document === doc && ev.contentChanges.length && endOff === null) {
+              const c = ev.contentChanges[0];
+              endOff = c.rangeOffset + c.text.length;
+          }
       });
+
       try {
-        await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
-        await sleep(40);
-        for (let i = 0; i < 2 && endOff === null; i++) {
-          await vscode.commands.executeCommand('editor.action.replaceOne');
-          await sleep(40);
-        }
-        await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
-        await sleep(40);
-        if (endOff !== null) {
-          const pos = doc.positionAt(endOff);
-          ed.selection = new vscode.Selection(pos, pos);
-          ed.revealRange(new vscode.Range(pos, pos));
-        } else {
-          ed.selection = origSel;
-        }
+          // Solo actualizamos si es estrictamente necesario (ahorra I/O de disco)
+          if (needsConfigToggle) {
+              await config.update('seedSearchStringFromSelection', 'never', vscode.ConfigurationTarget.Global);
+          }
+
+          // Disparamos la acción de iniciar búsqueda
+          await vscode.commands.executeCommand('editor.action.startFindReplaceAction');
+
+          // Realizamos el reemplazo
+          for (let i = 0; i < 2 && endOff === null; i++) {
+              await vscode.commands.executeCommand('editor.action.replaceOne');
+
+              for (let j = 0; j < 10 && endOff === null; j++) {
+                  await yieldEventLoop();
+              }
+          }
+
+          // Devolvemos el foco al editor (se lo llevó el diálogo de reemplazo)
+          await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
+
+          if (endOff !== null) {
+              const pos = doc.positionAt(endOff);
+              ed.selection = new vscode.Selection(pos, pos);
+              ed.revealRange(new vscode.Range(pos, pos));
+          } else {
+              ed.selection = origSel;
+          }
+
       } finally {
-        sub.dispose();
-        blockSelSuppressed = false;
+          sub.dispose();
+          blockSelSuppressed = false;
+
+          // Restauramos la configuración solo si la cambiamos
+          if (needsConfigToggle) {
+              // Hacemos el update de forma asíncrona pero sin hacer `await`,
+              // para liberar el comando rápido y que la UI de VSCode termine su trabajo.
+              config.update('seedSearchStringFromSelection', prevValue, vscode.ConfigurationTarget.Global)
+                    .then(() => {}, (err) => console.error(err));
+          }
+
+          replaceNextRunning = false;
       }
     },
     // Alt+F2 / Ctrl+F2: lista de símbolos del archivo / del proyecto,

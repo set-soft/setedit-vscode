@@ -303,7 +303,6 @@ still override them in your own `settings.json`.
 
 | Setting | Value | Why |
 |---------|-------|-----|
-| `editor.find.seedSearchStringFromSelection` | `"never"` | The search doesn't take its text from the selection/word under the cursor. |
 | `editor.renderWhitespace` | `"trailing"` | Shows trailing spaces. |
 | `files.trimTrailingWhitespace` | `true` | Removes trailing spaces on save. |
 | `files.insertFinalNewline` | `true` | Ensures a final newline on save. |

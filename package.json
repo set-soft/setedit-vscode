@@ -553,7 +553,6 @@
       }
     ],
     "configurationDefaults": {
-      "editor.find.seedSearchStringFromSelection": "never",
       "editor.renderWhitespace": "trailing",
       "files.trimTrailingWhitespace": true,
       "files.insertFinalNewline": true,
