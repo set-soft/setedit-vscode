@@ -65,6 +65,9 @@ The repository has two parts:
 - Fold buttons in the editor title bar
 - Calculator/evaluator
 
+**Others**
+- Project icon on Linux (create a PNG named `.vscode/icon.png` and it will be used as icon)
+
 ## Requirements
 
 - VSCode / VSCodium `^1.80.0`

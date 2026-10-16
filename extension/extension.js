@@ -59,7 +59,7 @@ function parseJsonc(t, k) {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function activate(context) {
+async function activate(context) {
   // ================================================================ MACROS
   // Se graba la lista de comandos ejecutados a través de SETEdit.exec
   // (los atajos "envueltos" que genera SETEdit.installKeybindings) y el
@@ -346,6 +346,66 @@ function activate(context) {
   // -----------------------------------------------
   // End of calculator stuff
   // -----------------------------------------------
+
+  // -----------------------------------------------
+  // Cargar un ícono si está disponible, sólo para
+  // Linux. Funciona creando un .desktop para el
+  // proyecto que apunta el ícono al del proyecto.
+  // -----------------------------------------------
+  if (vscode.workspace.workspaceFolders) {
+    const workspacePath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+    const workspaceName = vscode.workspace.name || 'Proyecto';
+    const iconPath = path.join(workspacePath, '.vscode', 'icon.png');
+
+    if (fs.existsSync(iconPath)) {
+      // Generar un identificador único pero persistente para este proyecto
+      const hash = crypto.createHash('md5').update(workspacePath).digest('hex').substring(0, 10);
+      const customClass = `vsc-custom-${hash}`;
+
+      // Crear el archivo .desktop para que GNOME lo lea
+      const desktopDir = path.join(os.homedir(), '.local', 'share', 'applications');
+      const desktopFile = path.join(desktopDir, `${customClass}.desktop`);
+
+      if (!fs.existsSync(desktopDir)) {
+          fs.mkdirSync(desktopDir, { recursive: true });
+      }
+
+      const desktopContent = `[Desktop Entry]
+Name=${workspaceName}
+Exec=codium
+Icon=${iconPath}
+Type=Application
+StartupWMClass=${customClass}
+`;
+      fs.writeFileSync(desktopFile, desktopContent);
+
+      // Preparar el cambio de título temporal para encontrar el Window ID
+      const config = vscode.workspace.getConfiguration('window');
+      const titleInspect = config.inspect('title');
+      const originalWorkspaceTitle = titleInspect.workspaceValue;
+
+      const tempTitle = `vsc-title-${Date.now()}`;
+
+      config.update('title', tempTitle, vscode.ConfigurationTarget.Workspace).then(() => {
+        // Darle tiempo a GNOME de registrar el .desktop y a VSCode de cambiar el título
+        setTimeout(() => {
+          // Encontramos la ventana y le cambiamos el WM_CLASS
+          const cmd = `WID=$(xdotool search --name "${tempTitle}" | head -n 1) && xdotool set_window --class "${customClass}" $WID`;
+          console.log(cmd);
+
+          cp.exec(cmd, (err) => {
+            if (err) console.error("Error cambiando el WM_CLASS:", err);
+
+            // Restaurar el título original
+            config.update('title', originalWorkspaceTitle, vscode.ConfigurationTarget.Workspace);
+          });
+        }, 1500);
+
+      });
+    }
+  }
+
+
 
   function macroStart() {
     if (rec.on) return;
