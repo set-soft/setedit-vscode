@@ -1660,7 +1660,7 @@ StartupWMClass=${customClass}
       return;
     }
 
-    await vscode.commands.executeCommand('workbench.action.quit');
+    await vscode.commands.executeCommand('workbench.action.closeWindow');
   }
 
   async function toggleInlayHints() {
