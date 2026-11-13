@@ -98,6 +98,11 @@
         "category": "SETEdit"
       },
       {
+        "command": "SETEdit.find",
+        "title": "Find starting with word under cursor",
+        "category": "SETEdit"
+      },
+      {
         "command": "SETEdit.macroStart",
         "title": "Record macro",
         "category": "SETEdit"

@@ -11,6 +11,8 @@ const { evaluate: mathEval, format } = require('mathjs');
 const intl = new Intl.NumberFormat(undefined, { useGrouping: true, });
 // Usado para evitar reemplazos simultáneos
 let replaceNextRunning = false;
+// Último modo usado: determina qué hace Ctrl+L
+let lastSearchMode = 'replace'; // 'find' | 'replace'
 // Utilidad para esperas breves en el Event Loop
 const yieldEventLoop = () => new Promise(r => setTimeout(r, 5));
 
@@ -1199,6 +1201,14 @@ StartupWMClass=${customClass}
     // (replaceOne nativo primero selecciona la coincidencia y recién en la
     // siguiente llamada reemplaza; por eso se repite si el texto no cambió.)
     replaceNext: async (ed) => {
+      // Si lo último fue una búsqueda sin reemplazo: buscar siguiente
+      if (lastSearchMode === 'find') {
+        await vscode.commands.executeCommand('editor.action.nextMatchFindAction');
+        // El comando puede dejar el foco en el widget de búsqueda; lo devolvemos al editor
+        await vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
+        return;
+      }
+
       // Evitar que dos reemplazos se realicen concurrentemente
       if (replaceNextRunning) return;
       replaceNextRunning = true;
@@ -1267,8 +1277,15 @@ StartupWMClass=${customClass}
         replaceNextRunning = false;
       }
     },
+    // Ctrl+Q F
+    find: async (ed) => {
+      lastSearchMode = 'find';
+      await vscode.commands.executeCommand('actions.find');
+    },
     // Ctrl + Q, A: Find and Replace (Estilo Borland)
     findAndReplaceWordUnderCursor: async () => {
+      lastSearchMode = 'replace';
+
       // Llama a Find normal. Esto fuerza a VS Code a capturar
       // la palabra bajo el cursor (o la selección si la hay).
       await vscode.commands.executeCommand('actions.find');

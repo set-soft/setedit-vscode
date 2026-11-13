@@ -202,8 +202,9 @@ column 0 doesn't include that last line.
 
 | Command ID | Title | Description |
 |------------|-------|-------------|
-| `SETEdit.replaceNext` | Replace next | Replaces the next match using the native find/replace widget. The cursor is left right after the replaced text, without selecting the next match. |
+| `SETEdit.replaceNext` | Replace/find next | Replaces/finds the next match using the native find/replace widget. The cursor is left right after the replaced text, without selecting the next match. Must be used with `SETEdit.find` |
 | `SETEdit.findAndReplaceWordUnderCursor` | Find and replace starting with word under cursor | Starts a find and replace taking the word under cursor |
+| `SETEdit.find` | Find starting with word under cursor | Starts a find taking the word under cursor |
 | `SETEdit.symbolsInFile` | Look for symbol in file (word under cursor) | Opens the symbol quick pick (`@`) filtered with the word under the cursor or selection. |
 | `SETEdit.symbolsInWorkspace` | Look for symbol in project (word under cursor) | Same, for the whole workspace (`#`). |
 | `SETEdit.cursorViewTop` | Jump to first visible line | Moves the cursor to the first line shown in the window, keeping the column. |

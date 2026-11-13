@@ -251,7 +251,7 @@
     // Ctrl + Q, F: Find
     {
         "key": "ctrl+q f",
-        "command": "actions.find"
+        "command": "SETEdit.find"
     },
     // Ctrl + Q, A: Find and Replace
     {
@@ -458,7 +458,6 @@
     {"key":"shift+alt+left","command":"SETEdit.exec","args":{"command":"cursorColumnSelectLeft"},"when":"textInputFocus"},
     {"key":"f6","command":"SETEdit.exec","args":{"command":"workbench.action.nextEditor"}},
     {"key":"shift+f6","command":"SETEdit.exec","args":{"command":"workbench.action.previousEditor"}},
-    {"key":"ctrl+q f","command":"SETEdit.exec","args":{"command":"actions.find"}},
     {"key":"escape","command":"SETEdit.exec","args":{"command":"hideSuggestWidget"},"when":"suggestWidgetVisible && textInputFocus"},
     {"key":"ctrl+tab","command":"SETEdit.exec","args":{"command":"editor.action.triggerSuggest"},"when":"editorHasCompletionItemProvider && textInputFocus && !editorReadonly"},
     {"key":"ctrl+f12","command":"SETEdit.exec","args":{"command":"workbench.action.reloadWindow"}},
